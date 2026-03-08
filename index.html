@@ -65,6 +65,17 @@
       <div class="hint">现代版：视觉升级 · 动效升级 · 保留原有逻辑</div>
     </div>
 
+
+    <section class="card" style="margin-bottom:10px">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:end">
+        <div><label>AI提供方</label><select id="aiProvider"><option value="gemini">Gemini</option><option value="openai">OpenAI/Codex</option></select></div>
+        <div><label>模型</label><input id="aiModel" value="gemini-2.5-pro" placeholder="gemini-2.5-pro / gpt-5"/></div>
+        <div style="min-width:320px;flex:1"><label>API Key（仅保存在你浏览器）</label><input id="aiKey" type="password" placeholder="粘贴你的 Gemini/OpenAI key"/></div>
+        <button class="btn" type="button" onclick="saveAIConfig()">保存AI配置</button>
+      </div>
+      <div id="aiCfgTip" style="font-size:12px;color:#475569;margin-top:8px">可选：不填则使用本地规则建议；填写后按钮会调用真实大模型。</div>
+    </section>
+
     <section class="card step active" data-step="1">
       <h3>产品基础信息</h3>
       <div class="grid">
@@ -315,8 +326,31 @@ function applyPreset(){
   toggleFields();
   refreshSummary();
 }
+function getAIConfig(){return {provider:localStorage.getItem('ai_provider')||$('aiProvider').value||'gemini',model:localStorage.getItem('ai_model')||$('aiModel').value||'gemini-2.5-pro',key:localStorage.getItem('ai_key')||$('aiKey').value||''};}
+function saveAIConfig(){localStorage.setItem('ai_provider',$('aiProvider').value);localStorage.setItem('ai_model',$('aiModel').value);localStorage.setItem('ai_key',$('aiKey').value.trim());$('aiCfgTip').textContent='已保存。后续将调用真实AI模型。';}
+async function callRealAI(kind){
+  const cfg=getAIConfig();
+  const payload={kind,productName:$('productName').value,market:$('market').value,category:$('category').value,priceBand:$('priceBand').value,monthlySalesTarget:$('monthlySalesTarget').value,monthlyAdBudget:$('monthlyAdBudget').value,expectedCVR:$('expectedCVR').value,marginNoAds:$('marginNoAds').value,productType:$('productType').value,lifecycle:$('lifecycle').value,objectives:selected('objectives'),spModes:selected('spModes')};
+  const prompt=`你是亚马逊广告资深投手。请基于输入给出${kind}的可执行建议。必须具体，含数字区间和理由。输入JSON：${JSON.stringify(payload)}`;
+  if(!cfg.key) return null;
+  try{
+    if(cfg.provider==='gemini'){
+      const url=`https://generativelanguage.googleapis.com/v1beta/models/${cfg.model}:generateContent?key=${cfg.key}`;
+      const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})});
+      const j=await r.json();
+      return j?.candidates?.[0]?.content?.parts?.map(p=>p.text).join('\n')||null;
+    }else{
+      const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${cfg.key}`},body:JSON.stringify({model:cfg.model,messages:[{role:'user',content:prompt}],temperature:0.3})});
+      const j=await r.json();
+      return j?.choices?.[0]?.message?.content||null;
+    }
+  }catch(e){return `真实AI调用失败：${e.message}`;}
+  return null;
+}
+function initAIConfig(){const p=localStorage.getItem('ai_provider');const m=localStorage.getItem('ai_model');const k=localStorage.getItem('ai_key'); if(p) $('aiProvider').value=p; if(m) $('aiModel').value=m; if(k) $('aiKey').value=k;}
 function showAI(id,text){const el=$(id);el.style.display='block';el.textContent=text;}
-function aiSuggestBudget(){
+async function aiSuggestBudget(){
+  const real=await callRealAI("aiSuggestBudget"); if(real) return showAI("aiBudget",real);
   const sales=Number($('monthlySalesTarget').value||0), budget=Number($('monthlyAdBudget').value||0), cvr=Number($('expectedCVR').value||0), margin=Number($('marginNoAds').value||0);
   const pt=$('productType').value, lc=$('lifecycle').value;
   if(!sales||!budget||!cvr||!margin) return showAI('aiBudget','请先填写步骤2核心字段后再生成建议。');
@@ -330,7 +364,8 @@ function aiSuggestBudget(){
 建议目标ACOS：${Math.max(3,margin*0.8).toFixed(1)}%
 ${acos*100>margin?'⚠ 当前预算压力偏高，建议下调预算或提高客单/利润率':'✅ 当前预算在可控区间内'}`);
 }
-function aiSuggestObjectives(){
+async function aiSuggestObjectives(){
+  const real=await callRealAI("aiSuggestObjectives"); if(real) return showAI("aiObjectives",real);
   const pt=$('productType').value, lc=$('lifecycle').value;
   const map={导入期:['曝光','扩流','出单'],成长期:['出单','推排名','扩流'],成熟期:['盈利','防御','出单'],衰退期:['盈利','防御']};
   const obj=map[lc]||['出单'];
@@ -340,7 +375,8 @@ function aiSuggestObjectives(){
 依据：${lc} + ${pt}。
 执行建议：主目标2-3个，避免全选导致组合过多。`);
 }
-function aiSuggestTargeting(){
+async function aiSuggestTargeting(){
+  const real=await callRealAI("aiSuggestTargeting"); if(real) return showAI("aiTargeting",real);
   const pt=$('productType').value, lc=$('lifecycle').value;
   let rec='';
   if(pt==='标品') rec='关键词匹配建议：Exact 50% / Phrase 35% / Broad 15%。优先：核心精准、自有品牌词。';
@@ -350,7 +386,8 @@ function aiSuggestTargeting(){
   if(lc==='成熟期') rec+=' 成熟期建议收缩到Exact/Phrase并加强否词。';
   showAI('aiTargeting',rec+'\n否词建议：每周清理高花费无转化词。');
 }
-function aiSuggestBids(){
+async function aiSuggestBids(){
+  const real=await callRealAI("aiSuggestBids"); if(real) return showAI("aiBids",real);
   const lc=$('lifecycle').value, pt=$('productType').value;
   let bid='动态竞价-提高和降低'; let top='20%-40%';
   if(lc==='成熟期'){bid='动态竞价-只降低'; top='10%-20%';}
@@ -360,7 +397,8 @@ function aiSuggestBids(){
 Top of Search 溢价建议：${top}
 Product Pages建议：5%-15%（用于商品定向收口）`);
 }
-function aiSuggestExecution(){
+async function aiSuggestExecution(){
+  const real=await callRealAI("aiSuggestExecution"); if(real) return showAI("aiExecution",real);
   if(!generated.length) return showAI('aiExecution','请先点击“生成组合”后再生成执行清单。');
   const top=generated.slice(0,8);
   const sum=top.map((r,i)=>`${i+1}. [${r.score}] ${r.objective} | ${r.spMode} | ${r.subType} | 预算 ${r.budgetAmt}`).join('\n');
@@ -373,6 +411,7 @@ function downloadJSON(){const b=new Blob([JSON.stringify(generated,null,2)],{typ
 function downloadCSV(){const H=['id','campaignName','adGroupName','productName','market','category','priceBand','monthlySalesTarget','monthlyAdBudget','expectedCVR','marginNoAds','productType','lifecycle','objective','spMode','subType','kwAttr','bid','placement','score','risk','budgetPct','budgetAmt'];const csv=[H.join(',')].concat(generated.map(r=>H.map(h=>`"${String(r[h]??'').replaceAll('"','""')}"`).join(','))).join('\n');const b=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='amazon_ads_wizard_pro.csv';a.click()}
 ['objectives','spModes','autoSub','manualMatch','manualProduct','kwAttr','bids','placements'].forEach(id=>$(id).addEventListener('change',refreshSummary));
 ['productName','monthlySalesTarget','monthlyAdBudget','expectedCVR','marginNoAds'].forEach(id=>$(id).addEventListener('input',refreshSummary));
+initAIConfig();
 setStep(1);toggleFields();refreshSummary();
 </script>
 </body></html>

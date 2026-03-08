@@ -186,9 +186,11 @@ function calcAndNext(){
   const be=margin, target=be*0.8; // conservative
   const sales=Number($('monthlySalesTarget').value||0); const budget=Number($('monthlyAdBudget').value||0);
   const acos = sales? budget/sales : 0;
+  const netProfit = sales*margin - budget;
+  const netMargin = sales ? netProfit/sales : 0;
   if(acos > be){ alert(`当前预算占比 ${(acos*100).toFixed(1)}% 已超过盈亏平衡ACOS ${(be*100).toFixed(1)}%，建议先下调预算或提高售价/利润率`); return; }
   const box=$('derived'); box.innerHTML='';
-  const pills=[`Break-even ACOS: ${(be*100).toFixed(1)}%`,`建议目标ACOS: ${(target*100).toFixed(1)}%`,`预算占比: ${(acos*100).toFixed(1)}%`];
+  const pills=[`Break-even ACOS: ${(be*100).toFixed(1)}%`,`建议目标ACOS: ${(target*100).toFixed(1)}%`,`预算占比: ${(acos*100).toFixed(1)}%`,`净毛利(扣广告): ${netProfit.toFixed(2)}`,`净毛利率(扣广告): ${(netMargin*100).toFixed(2)}%`];
   pills.forEach(t=>{const s=document.createElement('span');s.className='pill';s.textContent=t;box.appendChild(s)});
   next();
 }
@@ -207,7 +209,10 @@ function estimateCount(){
 }
 function refreshSummary(){
   const estimate=estimateCount();
-  const items=[`产品：${$('productName').value||'-'}`,`站点：${$('market').value}`,`目标月销：${$('monthlySalesTarget').value||'-'}`,`月广告预算：${$('monthlyAdBudget').value||'-'}`,`预计CVR：${$('expectedCVR').value||'-'}%`,`不含广告利润率：${$('marginNoAds').value||'-'}%`,`预计组合：${estimate}`,`已生成组合：${generated.length}`];
+  const sales=Number($('monthlySalesTarget').value||0), budget=Number($('monthlyAdBudget').value||0), margin=Number($('marginNoAds').value||0)/100;
+  const netProfit = sales*margin - budget;
+  const netMargin = sales ? netProfit/sales : 0;
+  const items=[`产品：${$('productName').value||'-'}`,`站点：${$('market').value}`,`目标月销：${$('monthlySalesTarget').value||'-'}`,`月广告预算：${$('monthlyAdBudget').value||'-'}`,`预计CVR：${$('expectedCVR').value||'-'}%`,`不含广告利润率：${$('marginNoAds').value||'-'}%`,`净毛利(扣广告)：${netProfit.toFixed(2)}`,`净毛利率(扣广告)：${(netMargin*100).toFixed(2)}%`,`预计组合：${estimate}`,`已生成组合：${generated.length}`];
   const box=$('summary');box.innerHTML='';items.forEach(t=>{const s=document.createElement('span');s.className='pill';s.textContent=t;box.appendChild(s)});
   $('comboAlert').textContent = estimate>3000 ? `⚠ 当前预计 ${estimate} 条，建议先收敛选择（目标 <= 3000）` : '';
 }

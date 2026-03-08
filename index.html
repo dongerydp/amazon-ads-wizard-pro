@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Amazon Ads 决策向导 Pro</title>
+  <style>
+    :root{--bg:#0b1020;--panel:#121935;--card:#fff;--text:#0f172a;--muted:#64748b;--pri:#2563eb;--ok:#059669;--line:#e2e8f0}
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:linear-gradient(135deg,#0b1020,#111a3a);color:#0f172a}
+    .app{max-width:1200px;margin:20px auto;padding:0 14px;display:grid;grid-template-columns:280px 1fr;gap:14px}
+    .side{background:rgba(255,255,255,.08);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:14px;color:#e2e8f0;height:calc(100vh - 40px);position:sticky;top:20px}
+    .brand{font-size:18px;font-weight:700;margin-bottom:8px}.sub{font-size:12px;color:#94a3b8;margin-bottom:12px}
+    .steps{display:flex;flex-direction:column;gap:8px}
+    .st{padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.05);font-size:13px;border:1px solid transparent;cursor:pointer;user-select:none}
+    .st:hover{border-color:rgba(96,165,250,.6)}
+    .st.active{background:rgba(37,99,235,.25);border-color:#60a5fa}
+    .main{background:#f8fafc;border-radius:16px;padding:14px;min-height:calc(100vh - 40px)}
+    .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .title{font-size:22px;font-weight:800}.hint{font-size:12px;color:#64748b}
+    .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px}
+    .step{display:none}.step.active{display:block}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(240px,1fr));gap:12px}
+    label{display:block;font-size:12px;color:#475569;margin-bottom:6px}
+    input,select{width:100%;padding:10px 11px;border:1px solid #cbd5e1;border-radius:10px;background:#fff}
+    select[multiple]{min-height:120px}
+    .actions{display:flex;justify-content:space-between;margin-top:12px}
+    .btn{border:1px solid #cbd5e1;background:#fff;border-radius:10px;padding:10px 14px;cursor:pointer;font-weight:600}
+    .btn.pri{background:var(--pri);color:#fff;border-color:var(--pri)}
+    .stats{display:flex;gap:10px;flex-wrap:wrap}
+    .pill{background:#eef2ff;border:1px solid #c7d2fe;color:#3730a3;padding:6px 10px;border-radius:999px;font-size:12px}
+    .hidden{display:none!important}
+    table{width:100%;border-collapse:collapse;font-size:12px}th,td{border-bottom:1px solid #e2e8f0;padding:8px;text-align:left}th{background:#f8fafc;position:sticky;top:0}
+    .box{max-height:52vh;overflow:auto;border:1px solid #e2e8f0;border-radius:12px}
+    @media (max-width:980px){.app{grid-template-columns:1fr}.side{height:auto;position:static}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand">Amazon Ads 决策向导 Pro</div>
+    <div class="sub">美观版 · 交互式流程 · 自动组合</div>
+    <div class="steps" id="steps"></div>
+  </aside>
+
+  <main class="main">
+    <div class="top">
+      <div class="title" id="stepTitle">步骤 1 / 9 · 产品基础信息</div>
+      <div class="hint">已加入：预算、预计CVR、利润率、月销目标</div>
+    </div>
+
+    <section class="card step active" data-step="1">
+      <h3>产品基础信息</h3>
+      <div class="grid">
+        <div><label>产品名称</label><input id="productName" placeholder="例如：Standing Desk"/></div>
+        <div><label>站点</label><select id="market"><option>US</option><option>CA</option><option>UK</option><option>DE</option><option>JP</option></select></div>
+        <div><label>类目</label><input id="category" placeholder="Home & Kitchen"/></div>
+        <div><label>价格带</label><input id="priceBand" placeholder="$49-$89"/></div>
+      </div>
+      <div class="actions"><span></span><button class="btn pri" onclick="next()">下一步</button></div>
+    </section>
+
+    <section class="card step" data-step="2">
+      <h3>目标与预算（必填）</h3>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap">
+        <label style="margin:0">快速模板</label>
+        <select id="preset" style="max-width:260px">
+          <option value="">请选择模板（可选）</option>
+          <option value="launch">导入期冲量</option>
+          <option value="growth">成长期扩量</option>
+          <option value="profit">成熟期控ACOS</option>
+        </select>
+        <button class="btn" type="button" onclick="applyPreset()">套用模板</button>
+      </div>
+      <div class="grid">
+        <div><label>月销目标（销售额）</label><input id="monthlySalesTarget" type="number" placeholder="例如 100000"/></div>
+        <div><label>广告预算上限（月）</label><input id="monthlyAdBudget" type="number" placeholder="例如 12000"/></div>
+        <div><label>预计转化率 CVR（%）</label><input id="expectedCVR" type="number" step="0.1" placeholder="例如 8"/></div>
+        <div><label>定价利润率（不含广告，%）</label><input id="marginNoAds" type="number" step="0.1" placeholder="例如 32"/></div>
+      </div>
+      <div class="stats" id="derived"></div>
+      <div class="actions"><button class="btn" onclick="prev()">上一步</button><button class="btn pri" onclick="calcAndNext()">下一步</button></div>
+    </section>
+
+    <section class="card step" data-step="3"><h3>产品类型选择</h3><select id="productType"><option>标品</option><option>半标品</option><option>非标品</option></select><div class="actions"><button class="btn" onclick="prev()">上一步</button><button class="btn pri" onclick="next()">下一步</button></div></section>
+    <section class="card step" data-step="4"><h3>生命周期选择</h3><select id="lifecycle"><option>导入期</option><option>成长期</option><option>成熟期</option><option>衰退期</option></select><div class="actions"><button class="btn" onclick="prev()">上一步</button><button class="btn pri" onclick="next()">下一步</button></div></section>
+
+    <section class="card step" data-step="5">
+      <h3>广告活动目的（可多选）</h3>
+      <select id="objectives" multiple>
+        <option>曝光</option><option>扩流</option><option>出单</option><option>盈利</option><option>推排名</option><option>防御</option><option>打标签</option>
+      </select>
+      <div class="actions"><button class="btn" onclick="prev()">上一步</button><button class="btn pri" onclick="next()">下一步</button></div>
+    </section>
+
+    <section class="card step" data-step="6">
+      <h3>SP投放模式（可多选）</h3>
+      <select id="spModes" multiple size="3"><option>SP自动</option><option>SP手动-关键词</option><option>SP手动-商品定向</option></select>
+      <div class="actions"><button class="btn" onclick="prev()">上一步</button><button class="btn pri" onclick="next();toggleFields()">下一步</button></div>
+    </section>
+
+    <section class="card step" data-step="7">
+      <h3>匹配与定向设置（按模式动态显示）</h3>
+      <div class="grid">
+        <div id="blockAuto"><label>自动子类型</label><select id="autoSub" multiple><option>Close Match</option><option>Loose Match</option><option>Substitutes</option><option>Complements</option></select></div>
+        <div id="blockManKw"><label>手动关键词匹配</label><select id="manualMatch" multiple><option>Broad</option><option>Phrase</option><option>Exact</option></select></div>
+        <div id="blockManProd"><label>手动商品定向</label><select id="manualProduct" multiple><option>ASIN定向</option><option>类目定向</option></select></div>
+        <div id="blockKwAttr"><label>关键词属性（仅手动关键词）</label><select id="kwAttr" multiple>
+          <option>核心精准</option><option>核心次精准</option><option>核心长尾</option><option>品类大词</option><option>大品牌词</option><option>竞品品牌词</option><option>自有品牌词</option><option>互补词</option><option>gift词</option><option>促销词</option><option>不相关词</option><option>外语词</option><option>错拼词</option>
+        </select></div>
+      </div>
+      <div class="actions"><button class="btn" onclick="prev()">上一步</button><button class="btn pri" onclick="next()">下一步</button></div>
+    </section>
+
+    <section class="card step" data-step="8">
+      <h3>竞价与广告位设置</h3>
+      <div class="grid">
+        <div><label>竞价策略</label><select id="bids" multiple><option>动态竞价-只降低</option><option>动态竞价-提高和降低</option><option>固定竞价</option></select></div>
+        <div><label>广告位</label><select id="placements" multiple><option>Top of Search</option><option>Product Pages</option><option>Rest of Search</option></select></div>
+      </div>
+      <div class="actions"><button class="btn" onclick="prev()">上一步</button><button class="btn pri" onclick="next()">下一步</button></div>
+    </section>
+
+    <section class="card step" data-step="9">
+      <h3>生成结果与导出</h3>
+      <div class="stats" id="summary"></div>
+      <div id="comboAlert" style="font-size:12px;color:#b45309;margin:8px 0"></div>
+      <div class="actions" style="justify-content:flex-start;gap:8px"><button class="btn" onclick="prev()">上一步</button><button class="btn pri" onclick="generate()">生成组合</button><button class="btn" onclick="downloadJSON()">导出JSON</button><button class="btn" onclick="downloadCSV()">导出CSV</button></div>
+      <div class="box"><table><thead><tr><th>#</th><th>Campaign</th><th>Ad Group</th><th>目的</th><th>SP模式</th><th>子类型</th><th>关键词属性</th><th>竞价</th><th>广告位</th></tr></thead><tbody id="tbody"></tbody></table></div>
+    </section>
+  </main>
+</div>
+
+<script>
+const total=9; let cur=1; let generated=[];
+const $=id=>document.getElementById(id); const selected=id=>[...$(id).selectedOptions].map(o=>o.value);
+const STEP_NAMES=['产品基础信息','目标与预算（必填）','产品类型选择','生命周期选择','广告活动目的（可多选）','SP投放模式（可多选）','匹配与定向设置','竞价与广告位设置','生成结果与导出'];
+function renderSteps(){const box=$('steps');box.innerHTML='';for(let i=1;i<=total;i++){const d=document.createElement('div');d.className='st'+(i===cur?' active':'');d.textContent=`步骤 ${i} / ${total} · ${STEP_NAMES[i-1]}`;d.onclick=()=>jumpTo(i);box.appendChild(d)}}
+function setStep(n){cur=n;document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));document.querySelector(`.step[data-step="${n}"]`).classList.add('active');$('stepTitle').textContent=`步骤 ${n} / ${total} · ${STEP_NAMES[n-1]}`;renderSteps();if(n===9) refreshSummary();}
+function jumpTo(target){if(target<=cur)return setStep(target);for(let s=cur;s<target;s++){if(!validateStep(s))return;}setStep(target)}
+function next(){if(cur<total&&validateStep(cur))setStep(cur+1)} function prev(){if(cur>1)setStep(cur-1)}
+function ensure(arr,fb){return arr.length?arr:fb}
+function validateStep(step){
+  if(step===1){
+    if(!$('productName').value.trim()) return alert('请填写产品名称'),false;
+    if(!$('category').value.trim()) return alert('请填写类目'),false;
+    if(!$('priceBand').value.trim()) return alert('请填写价格带'),false;
+  }
+  if(step===2){
+    const sales=Number($('monthlySalesTarget').value||0);
+    const budget=Number($('monthlyAdBudget').value||0);
+    const cvr=Number($('expectedCVR').value||0);
+    const margin=Number($('marginNoAds').value||0);
+    if(!(sales>0)) return alert('请填写月销目标（>0）'),false;
+    if(!(budget>0)) return alert('请填写月广告预算（>0）'),false;
+    if(!(cvr>0&&cvr<=100)) return alert('预计CVR请填写 0-100 之间的数值'),false;
+    if(!(margin>0&&margin<=100)) return alert('利润率请填写 0-100 之间的数值'),false;
+  }
+  return true;
+}
+function toggleFields(){
+  const m=selected('spModes');
+  $('blockAuto').classList.toggle('hidden',!m.includes('SP自动'));
+  const showKW=m.includes('SP手动-关键词');
+  $('blockManKw').classList.toggle('hidden',!showKW); $('blockKwAttr').classList.toggle('hidden',!showKW);
+  $('blockManProd').classList.toggle('hidden',!m.includes('SP手动-商品定向'));
+}
+$('spModes').addEventListener('change',toggleFields);
+function calcAndNext(){
+  if(!validateStep(2)) return;
+  const cvr=Number($('expectedCVR').value||0)/100, margin=Number($('marginNoAds').value||0)/100;
+  const be=margin, target=be*0.8; // conservative
+  const sales=Number($('monthlySalesTarget').value||0); const budget=Number($('monthlyAdBudget').value||0);
+  const acos = sales? budget/sales : 0;
+  const box=$('derived'); box.innerHTML='';
+  const pills=[`Break-even ACOS: ${(be*100).toFixed(1)}%`,`建议目标ACOS: ${(target*100).toFixed(1)}%`,`预算占比: ${(acos*100).toFixed(1)}%`];
+  pills.forEach(t=>{const s=document.createElement('span');s.className='pill';s.textContent=t;box.appendChild(s)});
+  next();
+}
+function estimateCount(){
+  const objectives=Math.max(selected('objectives').length,1);
+  const modes=ensure(selected('spModes'),['SP自动']);
+  const bids=Math.max(selected('bids').length,1);
+  const plc=Math.max(selected('placements').length,1);
+  let totalCount=0;
+  for(const m of modes){
+    const subs=m==='SP自动'?Math.max(selected('autoSub').length,1):(m==='SP手动-关键词'?Math.max(selected('manualMatch').length,1):Math.max(selected('manualProduct').length,1));
+    const attrs=m==='SP手动-关键词'?Math.max(selected('kwAttr').length,1):1;
+    totalCount += objectives*subs*attrs*bids*plc;
+  }
+  return totalCount;
+}
+function refreshSummary(){
+  const estimate=estimateCount();
+  const items=[`产品：${$('productName').value||'-'}`,`站点：${$('market').value}`,`目标月销：${$('monthlySalesTarget').value||'-'}`,`月广告预算：${$('monthlyAdBudget').value||'-'}`,`预计CVR：${$('expectedCVR').value||'-'}%`,`不含广告利润率：${$('marginNoAds').value||'-'}%`,`预计组合：${estimate}`,`已生成组合：${generated.length}`];
+  const box=$('summary');box.innerHTML='';items.forEach(t=>{const s=document.createElement('span');s.className='pill';s.textContent=t;box.appendChild(s)});
+  $('comboAlert').textContent = estimate>3000 ? `⚠ 当前预计 ${estimate} 条，建议先收敛选择（目标 <= 3000）` : '';
+}
+function generate(){
+  if(!validateStep(1)||!validateStep(2)) return;
+  const estimate=estimateCount();
+  if(estimate>3000 && !confirm(`预计生成 ${estimate} 条，可能过多。是否继续？`)) return;
+
+  const objectives=ensure(selected('objectives'),['出单']);
+  const modes=ensure(selected('spModes'),['SP自动']);
+  const auto=ensure(selected('autoSub'),['Close Match']);
+  const mm=ensure(selected('manualMatch'),['Broad']);
+  const mp=ensure(selected('manualProduct'),['ASIN定向']);
+  const attr=ensure(selected('kwAttr'),['核心精准']);
+  const bids=ensure(selected('bids'),['固定竞价']);
+  const plc=ensure(selected('placements'),['Top of Search']);
+  let id=1; const rows=[]; const uniq=new Set();
+  for(const o of objectives) for(const m of modes){
+    const subs=m==='SP自动'?auto:(m==='SP手动-关键词'?mm:mp);
+    for(const s of subs){const attrs=m==='SP手动-关键词'?attr:['N/A'];
+      for(const a of attrs) for(const b of bids) for(const p of plc){
+        const key=[o,m,s,a,b,p].join('|'); if(uniq.has(key)) continue; uniq.add(key);
+        const pn=($('productName').value||'Product').trim().replace(/\s+/g,'_');
+        const mk=$('market').value;
+        const campaignName=`${mk}_${pn}_${$('lifecycle').value}_${o}_${m}`;
+        const adGroupName=`${s}_${a}_${b}_${p}`.replace(/\s+/g,'_');
+        rows.push({id:id++,campaignName,adGroupName,objective:o,spMode:m,subType:s,kwAttr:a,bid:b,placement:p,
+        productName:$('productName').value,market:mk,category:$('category').value,priceBand:$('priceBand').value,
+        monthlySalesTarget:$('monthlySalesTarget').value,monthlyAdBudget:$('monthlyAdBudget').value,expectedCVR:$('expectedCVR').value,marginNoAds:$('marginNoAds').value,
+        productType:$('productType').value,lifecycle:$('lifecycle').value});}
+    }
+  }
+  generated=rows; const tb=$('tbody');tb.innerHTML='';rows.slice(0,3000).forEach(r=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${r.id}</td><td>${r.campaignName}</td><td>${r.adGroupName}</td><td>${r.objective}</td><td>${r.spMode}</td><td>${r.subType}</td><td>${r.kwAttr}</td><td>${r.bid}</td><td>${r.placement}</td>`;tb.appendChild(tr)});
+  refreshSummary();
+}
+function setMultiSelected(id,vals){[...$(id).options].forEach(o=>o.selected=vals.includes(o.value));}
+function applyPreset(){
+  const p=$('preset').value;
+  if(!p) return;
+  if(p==='launch'){
+    $('lifecycle').value='导入期';
+    setMultiSelected('objectives',['曝光','扩流','出单']);
+    setMultiSelected('spModes',['SP自动','SP手动-关键词']);
+    setMultiSelected('manualMatch',['Broad','Phrase']);
+    setMultiSelected('bids',['动态竞价-提高和降低']);
+    setMultiSelected('placements',['Top of Search','Rest of Search']);
+  }
+  if(p==='growth'){
+    $('lifecycle').value='成长期';
+    setMultiSelected('objectives',['出单','推排名']);
+    setMultiSelected('spModes',['SP手动-关键词','SP手动-商品定向']);
+    setMultiSelected('manualMatch',['Phrase','Exact']);
+    setMultiSelected('manualProduct',['ASIN定向','类目定向']);
+    setMultiSelected('bids',['动态竞价-提高和降低','固定竞价']);
+    setMultiSelected('placements',['Top of Search','Product Pages']);
+  }
+  if(p==='profit'){
+    $('lifecycle').value='成熟期';
+    setMultiSelected('objectives',['盈利','防御']);
+    setMultiSelected('spModes',['SP手动-关键词']);
+    setMultiSelected('manualMatch',['Exact']);
+    setMultiSelected('kwAttr',['核心精准','自有品牌词']);
+    setMultiSelected('bids',['动态竞价-只降低','固定竞价']);
+    setMultiSelected('placements',['Top of Search']);
+  }
+  toggleFields();
+  refreshSummary();
+}
+function downloadJSON(){const b=new Blob([JSON.stringify(generated,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='amazon_ads_wizard_pro.json';a.click()}
+function downloadCSV(){const H=['id','campaignName','adGroupName','productName','market','category','priceBand','monthlySalesTarget','monthlyAdBudget','expectedCVR','marginNoAds','productType','lifecycle','objective','spMode','subType','kwAttr','bid','placement'];const csv=[H.join(',')].concat(generated.map(r=>H.map(h=>`"${String(r[h]??'').replaceAll('"','""')}"`).join(','))).join('\n');const b=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='amazon_ads_wizard_pro.csv';a.click()}
+['objectives','spModes','autoSub','manualMatch','manualProduct','kwAttr','bids','placements'].forEach(id=>$(id).addEventListener('change',refreshSummary));
+['productName','monthlySalesTarget','monthlyAdBudget','expectedCVR','marginNoAds'].forEach(id=>$(id).addEventListener('input',refreshSummary));
+setStep(1);toggleFields();refreshSummary();
+</script>
+</body></html>

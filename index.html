@@ -326,18 +326,48 @@ function applyPreset(){
   toggleFields();
   refreshSummary();
 }
+function setAiStatus(msg,type='info'){
+  const el=$('aiCfgTip'); if(!el) return;
+  const styles={info:['#ecfeff','#67e8f9','#155e75'],ok:['#ecfdf5','#86efac','#166534'],warn:['#fff7ed','#fdba74','#9a3412'],err:['#fef2f2','#fca5a5','#991b1b']};
+  const st=styles[type]||styles.info;
+  el.style.background=st[0]; el.style.border='1px solid '+st[1]; el.style.color=st[2];
+  el.textContent=msg;
+}
+async function fetchWithTimeout(url,opt={},timeoutMs=12000){
+  const c=new AbortController();
+  const t=setTimeout(()=>c.abort('timeout'),timeoutMs);
+  try{return await fetch(url,{...opt,signal:c.signal});}
+  finally{clearTimeout(t);}
+}
 const GEMINI_MODEL='gemini-2.5-pro';
 const GEMINI_API_KEY='AIzaSyA9UFO-jvK-YL3I0eje8uFAdV8PJ4d-A8c'; // temporary, rotate ASAP
 async function callRealAI(kind){
   const payload={kind,productName:$('productName').value,market:$('market').value,category:$('category').value,priceBand:$('priceBand').value,monthlySalesTarget:$('monthlySalesTarget').value,monthlyAdBudget:$('monthlyAdBudget').value,expectedCVR:$('expectedCVR').value,marginNoAds:$('marginNoAds').value,productType:$('productType').value,lifecycle:$('lifecycle').value,objectives:selected('objectives'),spModes:selected('spModes')};
   const prompt=`你是亚马逊广告资深投手，请针对${kind}给出可执行建议。要求：1)必须输出具体数字区间；2)考虑标品/非标品差异；3)给出3-6条可执行动作。输入JSON：${JSON.stringify(payload)}`;
-  try{
-    const url=`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
-    const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})});
-    if(!r.ok) return `Gemini调用失败（${r.status}），当前先使用本地策略建议。`;
-    const j=await r.json();
-    return j?.candidates?.[0]?.content?.parts?.map(p=>p.text).join('\n')||null;
-  }catch(e){return `Gemini调用失败（网络错误），当前先使用本地策略建议。`;}
+  const url=`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+
+  for(let i=1;i<=2;i++){
+    try{
+      setAiStatus(`AI分析中（第${i}/2次）...`,'info');
+      const r=await fetchWithTimeout(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})},12000);
+      if(r.ok){
+        const j=await r.json();
+        const txt=j?.candidates?.[0]?.content?.parts?.map(p=>p.text).join('
+')||'';
+        if(txt.trim()){ setAiStatus('AI分析成功','ok'); return txt; }
+      }
+      if(r.status===429 || r.status>=500){ setAiStatus(`AI繁忙（${r.status}），自动重试...`,'warn'); continue; }
+      if(r.status===403){ setAiStatus('AI权限受限(403)，已切换本地建议','err'); return `Gemini受限(403)：已自动回退本地策略建议。`; }
+      setAiStatus(`AI调用失败（${r.status}），已回退本地建议`,'warn');
+      return `Gemini调用失败（${r.status}），已自动回退本地策略建议。`;
+    }catch(e){
+      if(i<2){ setAiStatus('网络波动，自动重试...','warn'); continue; }
+      setAiStatus('AI网络超时，已回退本地建议','err');
+      return `Gemini调用超时/网络异常，已自动回退本地策略建议。`;
+    }
+  }
+  setAiStatus('AI暂不可用，已回退本地建议','warn');
+  return `AI暂不可用，已自动回退本地策略建议。`;
 }
 function showAI(id,text){const el=$(id);el.style.display='block';el.textContent=text;}
 async function aiSuggestBudget(){

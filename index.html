@@ -140,7 +140,7 @@
       <div class="stats" id="summary"></div>
       <div id="comboAlert" style="font-size:12px;color:#b45309;margin:8px 0"></div>
       <div class="actions" style="justify-content:flex-start;gap:8px"><button class="btn" onclick="prev()">上一步</button><button class="btn pri" onclick="generate()">生成组合</button><button class="btn" onclick="downloadJSON()">导出JSON</button><button class="btn" onclick="downloadCSV()">导出CSV</button></div>
-      <div class="box"><table><thead><tr><th>#</th><th>Campaign</th><th>Ad Group</th><th>目的</th><th>SP模式</th><th>子类型</th><th>关键词属性</th><th>竞价</th><th>广告位</th></tr></thead><tbody id="tbody"></tbody></table></div>
+      <div class="box"><table><thead><tr><th>#</th><th>Campaign</th><th>Ad Group</th><th>目的</th><th>SP模式</th><th>子类型</th><th>关键词属性</th><th>竞价</th><th>广告位</th><th>评分</th><th>策略</th><th>预算占比</th><th>建议预算</th></tr></thead><tbody id="tbody"></tbody></table></div>
     </section>
   </main>
 </div>
@@ -186,6 +186,7 @@ function calcAndNext(){
   const be=margin, target=be*0.8; // conservative
   const sales=Number($('monthlySalesTarget').value||0); const budget=Number($('monthlyAdBudget').value||0);
   const acos = sales? budget/sales : 0;
+  if(acos > be){ alert(`当前预算占比 ${(acos*100).toFixed(1)}% 已超过盈亏平衡ACOS ${(be*100).toFixed(1)}%，建议先下调预算或提高售价/利润率`); return; }
   const box=$('derived'); box.innerHTML='';
   const pills=[`Break-even ACOS: ${(be*100).toFixed(1)}%`,`建议目标ACOS: ${(target*100).toFixed(1)}%`,`预算占比: ${(acos*100).toFixed(1)}%`];
   pills.forEach(t=>{const s=document.createElement('span');s.className='pill';s.textContent=t;box.appendChild(s)});
@@ -210,6 +211,24 @@ function refreshSummary(){
   const box=$('summary');box.innerHTML='';items.forEach(t=>{const s=document.createElement('span');s.className='pill';s.textContent=t;box.appendChild(s)});
   $('comboAlert').textContent = estimate>3000 ? `⚠ 当前预计 ${estimate} 条，建议先收敛选择（目标 <= 3000）` : '';
 }
+function scoreRow(r){
+  let score=60;
+  if(['出单','盈利','防御'].includes(r.objective)) score+=10;
+  if(r.spMode==='SP手动-关键词') score+=8;
+  if(r.subType==='Exact' || r.kwAttr==='核心精准' || r.kwAttr==='自有品牌词') score+=8;
+  if(r.bid==='动态竞价-只降低') score+=6;
+  if(r.placement==='Top of Search') score+=4;
+  const risk = score>=85?'稳健':(score>=72?'平衡':'进攻');
+  return {score:Math.max(1,Math.min(99,score)),risk};
+}
+function allocateBudget(rows){
+  const monthlyBudget=Number($('monthlyAdBudget').value||0);
+  const totalScore=rows.reduce((s,r)=>s+r.score,0)||1;
+  rows.forEach(r=>{
+    r.budgetPct=+(r.score/totalScore*100).toFixed(2);
+    r.budgetAmt=+(monthlyBudget*r.budgetPct/100).toFixed(2);
+  });
+}
 function generate(){
   if(!validateStep(1)||!validateStep(2)) return;
   const estimate=estimateCount();
@@ -233,13 +252,17 @@ function generate(){
         const mk=$('market').value;
         const campaignName=`${mk}_${pn}_${$('lifecycle').value}_${o}_${m}`;
         const adGroupName=`${s}_${a}_${b}_${p}`.replace(/\s+/g,'_');
-        rows.push({id:id++,campaignName,adGroupName,objective:o,spMode:m,subType:s,kwAttr:a,bid:b,placement:p,
+        const scored=scoreRow({objective:o,spMode:m,subType:s,kwAttr:a,bid:b,placement:p});
+        rows.push({id:id++,campaignName,adGroupName,objective:o,spMode:m,subType:s,kwAttr:a,bid:b,placement:p,score:scored.score,risk:scored.risk,
         productName:$('productName').value,market:mk,category:$('category').value,priceBand:$('priceBand').value,
         monthlySalesTarget:$('monthlySalesTarget').value,monthlyAdBudget:$('monthlyAdBudget').value,expectedCVR:$('expectedCVR').value,marginNoAds:$('marginNoAds').value,
         productType:$('productType').value,lifecycle:$('lifecycle').value});}
     }
   }
-  generated=rows; const tb=$('tbody');tb.innerHTML='';rows.slice(0,3000).forEach(r=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${r.id}</td><td>${r.campaignName}</td><td>${r.adGroupName}</td><td>${r.objective}</td><td>${r.spMode}</td><td>${r.subType}</td><td>${r.kwAttr}</td><td>${r.bid}</td><td>${r.placement}</td>`;tb.appendChild(tr)});
+  rows.sort((a,b)=>b.score-a.score);
+  rows.forEach((r,i)=>r.id=i+1);
+  allocateBudget(rows);
+  generated=rows; const tb=$('tbody');tb.innerHTML='';rows.slice(0,3000).forEach(r=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${r.id}</td><td>${r.campaignName}</td><td>${r.adGroupName}</td><td>${r.objective}</td><td>${r.spMode}</td><td>${r.subType}</td><td>${r.kwAttr}</td><td>${r.bid}</td><td>${r.placement}</td><td>${r.score}</td><td>${r.risk}</td><td>${r.budgetPct}%</td><td>${r.budgetAmt}</td>`;tb.appendChild(tr)});
   refreshSummary();
 }
 function setMultiSelected(id,vals){[...$(id).options].forEach(o=>o.selected=vals.includes(o.value));}
@@ -276,7 +299,7 @@ function applyPreset(){
   refreshSummary();
 }
 function downloadJSON(){const b=new Blob([JSON.stringify(generated,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='amazon_ads_wizard_pro.json';a.click()}
-function downloadCSV(){const H=['id','campaignName','adGroupName','productName','market','category','priceBand','monthlySalesTarget','monthlyAdBudget','expectedCVR','marginNoAds','productType','lifecycle','objective','spMode','subType','kwAttr','bid','placement'];const csv=[H.join(',')].concat(generated.map(r=>H.map(h=>`"${String(r[h]??'').replaceAll('"','""')}"`).join(','))).join('\n');const b=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='amazon_ads_wizard_pro.csv';a.click()}
+function downloadCSV(){const H=['id','campaignName','adGroupName','productName','market','category','priceBand','monthlySalesTarget','monthlyAdBudget','expectedCVR','marginNoAds','productType','lifecycle','objective','spMode','subType','kwAttr','bid','placement','score','risk','budgetPct','budgetAmt'];const csv=[H.join(',')].concat(generated.map(r=>H.map(h=>`"${String(r[h]??'').replaceAll('"','""')}"`).join(','))).join('\n');const b=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='amazon_ads_wizard_pro.csv';a.click()}
 ['objectives','spModes','autoSub','manualMatch','manualProduct','kwAttr','bids','placements'].forEach(id=>$(id).addEventListener('change',refreshSummary));
 ['productName','monthlySalesTarget','monthlyAdBudget','expectedCVR','marginNoAds'].forEach(id=>$(id).addEventListener('input',refreshSummary));
 setStep(1);toggleFields();refreshSummary();

@@ -348,8 +348,7 @@ function aiSuggestTargeting(){
   else rec='关键词匹配建议：Exact 40% / Phrase 40% / Broad 20%。';
   if(lc==='导入期') rec+=' 导入期建议保留更高Broad用于拓词。';
   if(lc==='成熟期') rec+=' 成熟期建议收缩到Exact/Phrase并加强否词。';
-  showAI('aiTargeting',rec+'
-否词建议：每周清理高花费无转化词。');
+  showAI('aiTargeting',rec+'\n否词建议：每周清理高花费无转化词。');
 }
 function aiSuggestBids(){
   const lc=$('lifecycle').value, pt=$('productType').value;
@@ -364,8 +363,7 @@ Product Pages建议：5%-15%（用于商品定向收口）`);
 function aiSuggestExecution(){
   if(!generated.length) return showAI('aiExecution','请先点击“生成组合”后再生成执行清单。');
   const top=generated.slice(0,8);
-  const sum=top.map((r,i)=>`${i+1}. [${r.score}] ${r.objective} | ${r.spMode} | ${r.subType} | 预算 ${r.budgetAmt}`).join('
-');
+  const sum=top.map((r,i)=>`${i+1}. [${r.score}] ${r.objective} | ${r.spMode} | ${r.subType} | 预算 ${r.budgetAmt}`).join('\n');
   showAI('aiExecution',`今日优先执行 Top 8：
 ${sum}
 

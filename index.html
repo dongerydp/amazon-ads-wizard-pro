@@ -46,6 +46,8 @@
     table{width:100%;border-collapse:collapse;font-size:12px}th,td{border-bottom:1px solid #e2e8f0;padding:9px 8px;text-align:left}
     th{background:#eef2ff;position:sticky;top:0;color:#312e81}
     .box{max-height:52vh;overflow:auto;border:1px solid #dbe4ff;border-radius:12px;background:#fff}
+    .ai-box{margin-top:10px;padding:10px 12px;border:1px dashed #a5b4fc;border-radius:12px;background:#eef2ff;color:#312e81;font-size:12px;white-space:pre-wrap}
+    .ai-actions{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
     @media (max-width:980px){.app{grid-template-columns:1fr}.side{height:auto;position:static}.top{flex-direction:column;align-items:flex-start;gap:6px}}
   </style>
 </head>
@@ -93,6 +95,8 @@
         <div><label>定价利润率（不含广告，%）</label><input id="marginNoAds" type="number" step="0.1" placeholder="例如 32"/></div>
       </div>
       <div class="stats" id="derived"></div>
+      <div class="ai-actions"><button class="btn" type="button" onclick="aiSuggestBudget()">AI预算建议</button></div>
+      <div class="ai-box" id="aiBudget" style="display:none"></div>
       <div class="actions"><button class="btn" onclick="prev()">上一步</button><button class="btn pri" onclick="calcAndNext()">下一步</button></div>
     </section>
 
@@ -104,6 +108,8 @@
       <select id="objectives" multiple>
         <option>曝光</option><option>扩流</option><option>出单</option><option>盈利</option><option>推排名</option><option>防御</option><option>打标签</option>
       </select>
+      <div class="ai-actions"><button class="btn" type="button" onclick="aiSuggestObjectives()">AI目的建议</button></div>
+      <div class="ai-box" id="aiObjectives" style="display:none"></div>
       <div class="actions"><button class="btn" onclick="prev()">上一步</button><button class="btn pri" onclick="next()">下一步</button></div>
     </section>
 
@@ -123,6 +129,8 @@
           <option>核心精准</option><option>核心次精准</option><option>核心长尾</option><option>品类大词</option><option>大品牌词</option><option>竞品品牌词</option><option>自有品牌词</option><option>互补词</option><option>gift词</option><option>促销词</option><option>不相关词</option><option>外语词</option><option>错拼词</option>
         </select></div>
       </div>
+      <div class="ai-actions"><button class="btn" type="button" onclick="aiSuggestTargeting()">AI匹配建议</button></div>
+      <div class="ai-box" id="aiTargeting" style="display:none"></div>
       <div class="actions"><button class="btn" onclick="prev()">上一步</button><button class="btn pri" onclick="next()">下一步</button></div>
     </section>
 
@@ -132,6 +140,8 @@
         <div><label>竞价策略</label><select id="bids" multiple><option>动态竞价-只降低</option><option>动态竞价-提高和降低</option><option>固定竞价</option></select></div>
         <div><label>广告位</label><select id="placements" multiple><option>Top of Search</option><option>Product Pages</option><option>Rest of Search</option></select></div>
       </div>
+      <div class="ai-actions"><button class="btn" type="button" onclick="aiSuggestBids()">AI竞价建议</button></div>
+      <div class="ai-box" id="aiBids" style="display:none"></div>
       <div class="actions"><button class="btn" onclick="prev()">上一步</button><button class="btn pri" onclick="next()">下一步</button></div>
     </section>
 
@@ -139,6 +149,8 @@
       <h3>生成结果与导出</h3>
       <div class="stats" id="summary"></div>
       <div id="comboAlert" style="font-size:12px;color:#b45309;margin:8px 0"></div>
+      <div class="ai-actions"><button class="btn" type="button" onclick="aiSuggestExecution()">AI执行清单</button></div>
+      <div class="ai-box" id="aiExecution" style="display:none"></div>
       <div class="actions" style="justify-content:flex-start;gap:8px"><button class="btn" onclick="prev()">上一步</button><button class="btn pri" onclick="generate()">生成组合</button><button class="btn" onclick="downloadJSON()">导出JSON</button><button class="btn" onclick="downloadCSV()">导出CSV</button></div>
       <div class="box"><table><thead><tr><th>#</th><th>Campaign</th><th>Ad Group</th><th>目的</th><th>SP模式</th><th>子类型</th><th>关键词属性</th><th>竞价</th><th>广告位</th><th>评分</th><th>策略</th><th>预算占比</th><th>建议预算</th></tr></thead><tbody id="tbody"></tbody></table></div>
     </section>
@@ -302,6 +314,62 @@ function applyPreset(){
   }
   toggleFields();
   refreshSummary();
+}
+function showAI(id,text){const el=$(id);el.style.display='block';el.textContent=text;}
+function aiSuggestBudget(){
+  const sales=Number($('monthlySalesTarget').value||0), budget=Number($('monthlyAdBudget').value||0), cvr=Number($('expectedCVR').value||0), margin=Number($('marginNoAds').value||0);
+  const pt=$('productType').value, lc=$('lifecycle').value;
+  if(!sales||!budget||!cvr||!margin) return showAI('aiBudget','请先填写步骤2核心字段后再生成建议。');
+  let ratioBase={导入期:0.18,成长期:0.14,成熟期:0.10,衰退期:0.06}[lc]||0.12;
+  if(pt==='非标品') ratioBase+=0.03;
+  if(pt==='标品') ratioBase-=0.01;
+  const low=sales*Math.max(ratioBase-0.03,0.03), high=sales*(ratioBase+0.03);
+  const be=margin; const acos=budget/sales;
+  showAI('aiBudget',`建议月预算区间：${low.toFixed(0)} - ${high.toFixed(0)}
+当前预算占比：${(acos*100).toFixed(1)}%，盈亏平衡ACOS：${be.toFixed(1)}%
+建议目标ACOS：${Math.max(3,margin*0.8).toFixed(1)}%
+${acos*100>margin?'⚠ 当前预算压力偏高，建议下调预算或提高客单/利润率':'✅ 当前预算在可控区间内'}`);
+}
+function aiSuggestObjectives(){
+  const pt=$('productType').value, lc=$('lifecycle').value;
+  const map={导入期:['曝光','扩流','出单'],成长期:['出单','推排名','扩流'],成熟期:['盈利','防御','出单'],衰退期:['盈利','防御']};
+  const obj=map[lc]||['出单'];
+  if(pt==='非标品' && !obj.includes('打标签')) obj.push('打标签');
+  if(pt==='标品' && !obj.includes('推排名')) obj.push('推排名');
+  showAI('aiObjectives',`推荐优先目的：${obj.join(' / ')}
+依据：${lc} + ${pt}。
+执行建议：主目标2-3个，避免全选导致组合过多。`);
+}
+function aiSuggestTargeting(){
+  const pt=$('productType').value, lc=$('lifecycle').value;
+  let rec='';
+  if(pt==='标品') rec='关键词匹配建议：Exact 50% / Phrase 35% / Broad 15%。优先：核心精准、自有品牌词。';
+  else if(pt==='非标品') rec='关键词匹配建议：Phrase 45% / Broad 35% / Exact 20%。优先：品类大词、长尾词、场景词。';
+  else rec='关键词匹配建议：Exact 40% / Phrase 40% / Broad 20%。';
+  if(lc==='导入期') rec+=' 导入期建议保留更高Broad用于拓词。';
+  if(lc==='成熟期') rec+=' 成熟期建议收缩到Exact/Phrase并加强否词。';
+  showAI('aiTargeting',rec+'
+否词建议：每周清理高花费无转化词。');
+}
+function aiSuggestBids(){
+  const lc=$('lifecycle').value, pt=$('productType').value;
+  let bid='动态竞价-提高和降低'; let top='20%-40%';
+  if(lc==='成熟期'){bid='动态竞价-只降低'; top='10%-20%';}
+  if(lc==='衰退期'){bid='固定竞价'; top='0%-10%';}
+  if(pt==='非标品'&&lc!=='成熟期') top='25%-50%';
+  showAI('aiBids',`推荐竞价策略：${bid}
+Top of Search 溢价建议：${top}
+Product Pages建议：5%-15%（用于商品定向收口）`);
+}
+function aiSuggestExecution(){
+  if(!generated.length) return showAI('aiExecution','请先点击“生成组合”后再生成执行清单。');
+  const top=generated.slice(0,8);
+  const sum=top.map((r,i)=>`${i+1}. [${r.score}] ${r.objective} | ${r.spMode} | ${r.subType} | 预算 ${r.budgetAmt}`).join('
+');
+  showAI('aiExecution',`今日优先执行 Top 8：
+${sum}
+
+执行节奏：先上前3条观察24小时，再放开其余。`);
 }
 function downloadJSON(){const b=new Blob([JSON.stringify(generated,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='amazon_ads_wizard_pro.json';a.click()}
 function downloadCSV(){const H=['id','campaignName','adGroupName','productName','market','category','priceBand','monthlySalesTarget','monthlyAdBudget','expectedCVR','marginNoAds','productType','lifecycle','objective','spMode','subType','kwAttr','bid','placement','score','risk','budgetPct','budgetAmt'];const csv=[H.join(',')].concat(generated.map(r=>H.map(h=>`"${String(r[h]??'').replaceAll('"','""')}"`).join(','))).join('\n');const b=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='amazon_ads_wizard_pro.csv';a.click()}

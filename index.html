@@ -352,8 +352,7 @@ async function callRealAI(kind){
       const r=await fetchWithTimeout(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})},12000);
       if(r.ok){
         const j=await r.json();
-        const txt=j?.candidates?.[0]?.content?.parts?.map(p=>p.text).join('
-')||'';
+        const txt=j?.candidates?.[0]?.content?.parts?.map(p=>p.text).join('\\n')||'';
         if(txt.trim()){ setAiStatus('AI分析成功','ok'); return txt; }
       }
       if(r.status===429 || r.status>=500){ setAiStatus(`AI繁忙（${r.status}），自动重试...`,'warn'); continue; }

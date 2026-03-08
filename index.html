@@ -326,15 +326,18 @@ function applyPreset(){
   toggleFields();
   refreshSummary();
 }
-const AI_PROXY_ENDPOINT='https://ai-proxy-placeholder.workers.dev/ai';
+const GEMINI_MODEL='gemini-2.5-pro';
+const GEMINI_API_KEY='AIzaSyA9UFO-jvK-YL3I0eje8uFAdV8PJ4d-A8c'; // temporary, rotate ASAP
 async function callRealAI(kind){
   const payload={kind,productName:$('productName').value,market:$('market').value,category:$('category').value,priceBand:$('priceBand').value,monthlySalesTarget:$('monthlySalesTarget').value,monthlyAdBudget:$('monthlyAdBudget').value,expectedCVR:$('expectedCVR').value,marginNoAds:$('marginNoAds').value,productType:$('productType').value,lifecycle:$('lifecycle').value,objectives:selected('objectives'),spModes:selected('spModes')};
+  const prompt=`你是亚马逊广告资深投手，请针对${kind}给出可执行建议。要求：1)必须输出具体数字区间；2)考虑标品/非标品差异；3)给出3-6条可执行动作。输入JSON：${JSON.stringify(payload)}`;
   try{
-    const r=await fetch(AI_PROXY_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    if(!r.ok) return `AI代理暂不可用（${r.status}），当前先使用本地策略建议。`;
+    const url=`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+    const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})});
+    if(!r.ok) return `Gemini调用失败（${r.status}），当前先使用本地策略建议。`;
     const j=await r.json();
-    return j?.text||j?.advice||null;
-  }catch(e){return `AI代理暂不可用（网络错误），当前先使用本地策略建议。`;}
+    return j?.candidates?.[0]?.content?.parts?.map(p=>p.text).join('\n')||null;
+  }catch(e){return `Gemini调用失败（网络错误），当前先使用本地策略建议。`;}
 }
 function showAI(id,text){const el=$(id);el.style.display='block';el.textContent=text;}
 async function aiSuggestBudget(){

@@ -79,10 +79,10 @@
     <section class="card step active" data-step="1">
       <h3>产品基础信息</h3>
       <div class="grid">
-        <div><label>产品名称</label><input id="productName" placeholder="例如：Standing Desk"/></div>
-        <div><label>站点</label><select id="market"><option>US</option><option>CA</option><option>UK</option><option>DE</option><option>JP</option></select></div>
-        <div><label>类目</label><input id="category" placeholder="Home & Kitchen"/></div>
-        <div><label>价格带</label><input id="priceBand" placeholder="$49-$89"/></div>
+        <div><label>产品名称</label><input id="productName" placeholder="例如：Standing Desk" value="Standing Desk Pro"/></div>
+        <div><label>站点</label><select id="market"><option selected>US</option><option>CA</option><option>UK</option><option>DE</option><option>JP</option></select></div>
+        <div><label>类目</label><input id="category" placeholder="Home & Kitchen" value="Home & Kitchen"/></div>
+        <div><label>价格带</label><input id="priceBand" placeholder="$49-$89" value="$89-$149"/></div>
       </div>
       <div class="actions"><span></span><button class="btn pri" onclick="next()">下一步</button></div>
     </section>
@@ -100,10 +100,10 @@
         <button class="btn" type="button" onclick="applyPreset()">套用模板</button>
       </div>
       <div class="grid">
-        <div><label>月销目标（销售额）</label><input id="monthlySalesTarget" type="number" placeholder="例如 100000"/></div>
-        <div><label>广告预算上限（月）</label><input id="monthlyAdBudget" type="number" placeholder="例如 12000"/></div>
-        <div><label>预计转化率 CVR（%）</label><input id="expectedCVR" type="number" step="0.1" placeholder="例如 8"/></div>
-        <div><label>定价利润率（不含广告，%）</label><input id="marginNoAds" type="number" step="0.1" placeholder="例如 32"/></div>
+        <div><label>月销目标（销售额）</label><input id="monthlySalesTarget" type="number" placeholder="例如 100000" value="120000"/></div>
+        <div><label>广告预算上限（月）</label><input id="monthlyAdBudget" type="number" placeholder="例如 12000" value="15000"/></div>
+        <div><label>预计转化率 CVR（%）</label><input id="expectedCVR" type="number" step="0.1" placeholder="例如 8" value="9.5"/></div>
+        <div><label>定价利润率（不含广告，%）</label><input id="marginNoAds" type="number" step="0.1" placeholder="例如 32" value="34"/></div>
       </div>
       <div class="stats" id="derived"></div>
       <div class="ai-actions"><button class="btn" type="button" onclick="aiSuggestBudget()">AI预算建议</button></div>
@@ -111,8 +111,8 @@
       <div class="actions"><button class="btn" onclick="prev()">上一步</button><button class="btn pri" onclick="calcAndNext()">下一步</button></div>
     </section>
 
-    <section class="card step" data-step="3"><h3>产品类型选择</h3><select id="productType"><option>标品</option><option>半标品</option><option>非标品</option></select><div class="actions"><button class="btn" onclick="prev()">上一步</button><button class="btn pri" onclick="next()">下一步</button></div></section>
-    <section class="card step" data-step="4"><h3>生命周期选择</h3><select id="lifecycle"><option>导入期</option><option>成长期</option><option>成熟期</option><option>衰退期</option></select><div class="actions"><button class="btn" onclick="prev()">上一步</button><button class="btn pri" onclick="next()">下一步</button></div></section>
+    <section class="card step" data-step="3"><h3>产品类型选择</h3><select id="productType"><option selected>标品</option><option>半标品</option><option>非标品</option></select><div class="actions"><button class="btn" onclick="prev()">上一步</button><button class="btn pri" onclick="next()">下一步</button></div></section>
+    <section class="card step" data-step="4"><h3>生命周期选择</h3><select id="lifecycle"><option>导入期</option><option selected>成长期</option><option>成熟期</option><option>衰退期</option></select><div class="actions"><button class="btn" onclick="prev()">上一步</button><button class="btn pri" onclick="next()">下一步</button></div></section>
 
     <section class="card step" data-step="5">
       <h3>广告活动目的（可多选）</h3>
@@ -402,6 +402,14 @@ function downloadJSON(){const b=new Blob([JSON.stringify(generated,null,2)],{typ
 function downloadCSV(){const H=['id','campaignName','adGroupName','productName','market','category','priceBand','monthlySalesTarget','monthlyAdBudget','expectedCVR','marginNoAds','productType','lifecycle','objective','spMode','subType','kwAttr','bid','placement','score','risk','budgetPct','budgetAmt'];const csv=[H.join(',')].concat(generated.map(r=>H.map(h=>`"${String(r[h]??'').replaceAll('"','""')}"`).join(','))).join('\n');const b=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='amazon_ads_wizard_pro.csv';a.click()}
 ['objectives','spModes','autoSub','manualMatch','manualProduct','kwAttr','bids','placements'].forEach(id=>$(id).addEventListener('change',refreshSummary));
 ['productName','monthlySalesTarget','monthlyAdBudget','expectedCVR','marginNoAds'].forEach(id=>$(id).addEventListener('input',refreshSummary));
+// 默认测试预设（便于快速验证）
+setMultiSelected('objectives',['出单','推排名']);
+setMultiSelected('spModes',['SP手动-关键词','SP自动']);
+setMultiSelected('manualMatch',['Phrase','Exact']);
+setMultiSelected('kwAttr',['核心精准','自有品牌词']);
+setMultiSelected('autoSub',['Close Match','Loose Match']);
+setMultiSelected('bids',['动态竞价-提高和降低']);
+setMultiSelected('placements',['Top of Search','Product Pages']);
 setStep(1);toggleFields();refreshSummary();
 </script>
 </body></html>

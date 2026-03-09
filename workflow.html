@@ -128,8 +128,9 @@
   </div>
 
 <script>
-const state={productType:'',lifecycle:'',objective:'',placement:'',bid:'',kwAttr:''};
+const state={productType:'',lifecycle:'',objective:[],placement:[],bid:'',kwAttr:[]};
 const stepKeys=['productType','lifecycle','objective','placement','bid','kwAttr'];
+const multiKeys=new Set(['objective','placement','kwAttr']);
 let currentStep=1;
 
 function initOptions(){
@@ -139,9 +140,15 @@ function initOptions(){
       btn.onclick=()=>{
         const step = stepKeys.indexOf(key)+1;
         if(step!==currentStep) return; // 只能操作当前步骤
-        state[key]=btn.dataset.v;
+        const v=btn.dataset.v;
+        if(multiKeys.has(key)){
+          const set=new Set(state[key]||[]);
+          if(set.has(v)) set.delete(v); else set.add(v);
+          state[key]=[...set];
+        }else{
+          state[key]=v;
+        }
         paintOptions();
-        if(currentStep<6){ currentStep++; updateStepUI(); }
         calc();
       };
     });
@@ -153,7 +160,10 @@ function initOptions(){
 function paintOptions(){
   document.querySelectorAll('.opts').forEach(group=>{
     const key=group.dataset.key;
-    group.querySelectorAll('.opt').forEach(btn=>btn.classList.toggle('active',btn.dataset.v===state[key]));
+    group.querySelectorAll('.opt').forEach(btn=>{
+      const on = multiKeys.has(key) ? (state[key]||[]).includes(btn.dataset.v) : btn.dataset.v===state[key];
+      btn.classList.toggle('active',on);
+    });
   });
 }
 
@@ -174,7 +184,15 @@ function updateStepUI(){
   p.textContent = `当前：Step ${currentStep} / 6（${['产品类型','当前周期','活动目的','广告位','竞价策略','关键词属性'][currentStep-1]}）`;
   drawLinks();
 }
-function nextStep(){ if(currentStep<6){ currentStep++; updateStepUI(); } }
+function stepSelected(step){
+  const key=stepKeys[step-1];
+  if(multiKeys.has(key)) return (state[key]||[]).length>0;
+  return !!state[key];
+}
+function nextStep(){
+  if(!stepSelected(currentStep)) return alert('请先选择当前步骤内容');
+  if(currentStep<6){ currentStep++; updateStepUI(); }
+}
 function prevStep(){ if(currentStep>1){ currentStep--; updateStepUI(); } }
 
 function nodeCenter(id,right=true){
@@ -209,14 +227,13 @@ function drawLinks(){
 function calc(){
   const text =
 `当前已选路径：\n`+
-`产品类型：${state.productType}\n`+
-`当前周期：${state.lifecycle}\n`+
-`活动目的：${state.objective}\n`+
-`广告位：${state.placement}\n`+
-`竞价策略：${state.bid}\n`+
-`关键词属性：${state.kwAttr}\n\n`+
-`说明：这是“单路径一步步选择”模式，每次只确定 1 条投放路径。\n`+
-`如需看全量组合规模，再切回组合计算页。`;
+`产品类型：${state.productType||'-'}\n`+
+`当前周期：${state.lifecycle||'-'}\n`+
+`活动目的：${(state.objective||[]).join(' / ')||'-'}\n`+
+`广告位：${(state.placement||[]).join(' / ')||'-'}\n`+
+`竞价策略：${state.bid||'-'}\n`+
+`关键词属性：${(state.kwAttr||[]).join(' / ')||'-'}\n\n`+
+`说明：当前为分步选择模式；目的/广告位/关键词属性支持多选。`;
   document.getElementById('out').textContent=text;
 }
 
@@ -225,7 +242,7 @@ function startFlow(){
   document.getElementById('canvas').style.display='block';
   drawLinks();
 }
-function setPreset(){ state.productType='标品';state.lifecycle='成长期';state.objective='出单';state.placement='Top of Search';state.bid='动态竞价-提高和降低';state.kwAttr='核心精准'; currentStep=1; paintOptions(); updateStepUI(); calc(); }
+function setPreset(){ state.productType='';state.lifecycle='';state.objective=[];state.placement=[];state.bid='';state.kwAttr=[]; currentStep=1; paintOptions(); updateStepUI(); calc(); }
 function syncFromMain(){ alert('主站参数同步可按需再接入（当前先用独立工作流版）。'); }
 
 function toggleTheme(){

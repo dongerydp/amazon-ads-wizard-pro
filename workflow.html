@@ -24,7 +24,8 @@
       #0f1522;}
     svg.links{position:absolute;inset:0;pointer-events:none}
 
-    .node{position:absolute;width:220px;background:var(--card);border:1px solid #3a4866;border-radius:12px;padding:10px;box-shadow:0 8px 18px rgba(0,0,0,.28);transition:.2s}
+    .node{position:absolute;width:220px;background:var(--card);border:1px solid #3a4866;border-radius:12px;padding:10px;box-shadow:0 8px 18px rgba(0,0,0,.28);transition:.2s;cursor:grab}
+    .node.dragging{cursor:grabbing}
     .node.locked{opacity:.35;filter:grayscale(.3)}
     .node.current{box-shadow:0 0 0 2px #60a5fa,0 8px 18px rgba(0,0,0,.28)}
     .node .h{font-size:12px;color:#9cb0d4;margin-bottom:8px}
@@ -150,7 +151,7 @@ function updateStepUI(){
     const isCurrent = s===currentStep;
     node.classList.toggle('locked',!isCurrent);
     node.classList.toggle('current',isCurrent);
-    node.style.display = isCurrent ? 'block' : 'none'; // 一次只显示一个步骤
+    node.style.display = 'block'; // 全部展示，当前步骤高亮；仅当前步骤可选
   });
   const p=document.getElementById('progress');
   p.textContent = `当前：Step ${currentStep} / 6（${['产品类型','当前周期','活动目的','广告位','竞价策略','关键词属性'][currentStep-1]}）`;
@@ -199,9 +200,39 @@ function calc(){
 function setPreset(){ state.productType='标品';state.lifecycle='成长期';state.objective='出单';state.placement='Top of Search';state.bid='动态竞价-提高和降低';state.kwAttr='核心精准'; currentStep=1; paintOptions(); updateStepUI(); calc(); }
 function syncFromMain(){ alert('主站参数同步可按需再接入（当前先用独立工作流版）。'); }
 
+function initDrag(){
+  const canvas=document.getElementById('canvas');
+  let dragging=null, offsetX=0, offsetY=0;
+  document.querySelectorAll('.node').forEach(node=>{
+    node.addEventListener('mousedown',e=>{
+      if(e.target.closest('button')) return; // 按钮点击不触发拖动
+      dragging=node;
+      const rect=node.getBoundingClientRect();
+      offsetX=e.clientX-rect.left;
+      offsetY=e.clientY-rect.top;
+      node.classList.add('dragging');
+      e.preventDefault();
+    });
+  });
+  window.addEventListener('mousemove',e=>{
+    if(!dragging) return;
+    const cr=canvas.getBoundingClientRect();
+    const left=e.clientX-cr.left+canvas.scrollLeft-offsetX;
+    const top=e.clientY-cr.top+canvas.scrollTop-offsetY;
+    dragging.style.left=Math.max(0,left)+'px';
+    dragging.style.top=Math.max(0,top)+'px';
+    drawLinks();
+  });
+  window.addEventListener('mouseup',()=>{
+    if(dragging) dragging.classList.remove('dragging');
+    dragging=null;
+  });
+}
+
 window.addEventListener('resize',drawLinks);
 document.getElementById('canvas').addEventListener('scroll',drawLinks);
 initOptions();
+initDrag();
 drawLinks();
 calc();
 </script>

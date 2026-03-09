@@ -147,6 +147,8 @@ function initOptions(){
           state[key]=[...set];
         }else{
           state[key]=v;
+          // 单选步骤点击后自动进入下一步，避免“进不去下一步”的体感
+          if(currentStep<6){ currentStep++; updateStepUI(); }
         }
         paintOptions();
         calc();

@@ -32,8 +32,6 @@
     .node{position:absolute;width:220px;background:var(--card);border:1px solid #3a4866;border-radius:12px;padding:10px;box-shadow:0 8px 18px rgba(0,0,0,.28);transition:.2s;cursor:grab}
     .node.dragging{cursor:grabbing}
     .node.locked{opacity:.35;filter:grayscale(.3)}
-    .node.current{box-shadow:0 8px 18px rgba(0,0,0,.28);border-color:#3a4866}
-    .node.done{opacity:1;filter:none;border-color:#3a4866;box-shadow:0 8px 18px rgba(0,0,0,.28)}
     .node .h{font-size:12px;color:#9cb0d4;margin-bottom:8px}
     .node .t{font-size:13px;font-weight:800;margin-bottom:8px}
     .opts{display:flex;gap:6px;flex-wrap:wrap}
@@ -165,8 +163,6 @@ function updateStepUI(){
     const isCurrent = s===currentStep;
     const isDone = s<currentStep;
     node.classList.toggle('locked',!isCurrent && !isDone);
-    node.classList.toggle('current',isCurrent);
-    node.classList.toggle('done',isDone);
     // 只显示已完成+当前步骤；后续未选步骤不显示
     node.style.display = (isDone || isCurrent) ? 'block' : 'none';
   });

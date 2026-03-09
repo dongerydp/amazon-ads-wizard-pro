@@ -61,44 +61,44 @@
       </div>
 
       <div class="node" id="n1" data-step="1" style="left:320px;top:40px">
-        <div class="h">Step 1</div><div class="t">产品类型数</div>
-        <div class="opts" data-key="productTypes" data-default="3">
-          <button class="opt" data-v="1">1</button><button class="opt" data-v="2">2</button><button class="opt" data-v="3">3</button>
+        <div class="h">Step 1</div><div class="t">产品类型</div>
+        <div class="opts" data-key="productType" data-default="标品">
+          <button class="opt" data-v="标品">标品</button><button class="opt" data-v="半标品">半标品</button><button class="opt" data-v="非标品">非标品</button>
         </div>
       </div>
 
       <div class="node" id="n2" data-step="2" style="left:320px;top:170px">
-        <div class="h">Step 2</div><div class="t">生命周期数</div>
-        <div class="opts" data-key="lifecycles" data-default="4">
-          <button class="opt" data-v="1">1</button><button class="opt" data-v="2">2</button><button class="opt" data-v="3">3</button><button class="opt" data-v="4">4</button>
+        <div class="h">Step 2</div><div class="t">当前周期</div>
+        <div class="opts" data-key="lifecycle" data-default="成长期">
+          <button class="opt" data-v="导入期">导入期</button><button class="opt" data-v="成长期">成长期</button><button class="opt" data-v="成熟期">成熟期</button><button class="opt" data-v="衰退期">衰退期</button>
         </div>
       </div>
 
       <div class="node" id="n3" data-step="3" style="left:320px;top:300px">
-        <div class="h">Step 3</div><div class="t">活动目的数</div>
-        <div class="opts" data-key="objectives" data-default="7">
-          <button class="opt" data-v="1">1</button><button class="opt" data-v="2">2</button><button class="opt" data-v="3">3</button><button class="opt" data-v="4">4</button><button class="opt" data-v="5">5</button><button class="opt" data-v="6">6</button><button class="opt" data-v="7">7</button>
+        <div class="h">Step 3</div><div class="t">活动目的</div>
+        <div class="opts" data-key="objective" data-default="出单">
+          <button class="opt" data-v="曝光">曝光</button><button class="opt" data-v="扩流">扩流</button><button class="opt" data-v="出单">出单</button><button class="opt" data-v="盈利">盈利</button><button class="opt" data-v="推排名">推排名</button><button class="opt" data-v="防御">防御</button><button class="opt" data-v="打标签">打标签</button>
         </div>
       </div>
 
       <div class="node" id="n4" data-step="4" style="left:320px;top:430px">
-        <div class="h">Step 4</div><div class="t">广告位类型数</div>
-        <div class="opts" data-key="placements" data-default="3">
-          <button class="opt" data-v="1">1</button><button class="opt" data-v="2">2</button><button class="opt" data-v="3">3</button>
+        <div class="h">Step 4</div><div class="t">广告位</div>
+        <div class="opts" data-key="placement" data-default="Top of Search">
+          <button class="opt" data-v="Top of Search">Top of Search</button><button class="opt" data-v="Product Pages">Product Pages</button><button class="opt" data-v="Rest of Search">Rest of Search</button>
         </div>
       </div>
 
       <div class="node" id="n5" data-step="5" style="left:620px;top:130px">
-        <div class="h">Step 5</div><div class="t">竞价策略数</div>
-        <div class="opts" data-key="bids" data-default="3">
-          <button class="opt" data-v="1">1</button><button class="opt" data-v="2">2</button><button class="opt" data-v="3">3</button>
+        <div class="h">Step 5</div><div class="t">竞价策略</div>
+        <div class="opts" data-key="bid" data-default="动态竞价-提高和降低">
+          <button class="opt" data-v="动态竞价-只降低">动态竞价-只降低</button><button class="opt" data-v="动态竞价-提高和降低">动态竞价-提高和降低</button><button class="opt" data-v="固定竞价">固定竞价</button>
         </div>
       </div>
 
       <div class="node" id="n6" data-step="6" style="left:620px;top:300px">
-        <div class="h">Step 6</div><div class="t">关键词属性数</div>
-        <div class="opts" data-key="kwAttrs" data-default="13">
-          <button class="opt" data-v="1">1</button><button class="opt" data-v="3">3</button><button class="opt" data-v="5">5</button><button class="opt" data-v="8">8</button><button class="opt" data-v="13">13</button>
+        <div class="h">Step 6</div><div class="t">关键词属性</div>
+        <div class="opts" data-key="kwAttr" data-default="核心精准">
+          <button class="opt" data-v="核心精准">核心精准</button><button class="opt" data-v="核心次精准">核心次精准</button><button class="opt" data-v="核心长尾">核心长尾</button><button class="opt" data-v="品类大词">品类大词</button><button class="opt" data-v="大品牌词">大品牌词</button><button class="opt" data-v="竞品品牌词">竞品品牌词</button><button class="opt" data-v="自有品牌词">自有品牌词</button><button class="opt" data-v="互补词">互补词</button><button class="opt" data-v="gift词">gift词</button><button class="opt" data-v="促销词">促销词</button><button class="opt" data-v="不相关词">不相关词</button><button class="opt" data-v="外语词">外语词</button><button class="opt" data-v="错拼词">错拼词</button>
         </div>
       </div>
 
@@ -115,8 +115,8 @@
   </div>
 
 <script>
-const state={productTypes:3,lifecycles:4,objectives:7,placements:3,bids:3,kwAttrs:13};
-const stepKeys=['productTypes','lifecycles','objectives','placements','bids','kwAttrs'];
+const state={productType:'标品',lifecycle:'成长期',objective:'出单',placement:'Top of Search',bid:'动态竞价-提高和降低',kwAttr:'核心精准'};
+const stepKeys=['productType','lifecycle','objective','placement','bid','kwAttr'];
 let currentStep=1;
 
 function initOptions(){
@@ -125,10 +125,11 @@ function initOptions(){
     group.querySelectorAll('.opt').forEach(btn=>{
       btn.onclick=()=>{
         const step = stepKeys.indexOf(key)+1;
-        if(step>currentStep) return;
-        state[key]=Number(btn.dataset.v);
+        if(step!==currentStep) return; // 只能操作当前步骤
+        state[key]=btn.dataset.v;
         paintOptions();
-        if(step===currentStep && currentStep<6){ currentStep++; updateStepUI(); }
+        if(currentStep<6){ currentStep++; updateStepUI(); }
+        calc();
       };
     });
   });
@@ -146,11 +147,14 @@ function paintOptions(){
 function updateStepUI(){
   document.querySelectorAll('.node[data-step]').forEach(node=>{
     const s=Number(node.dataset.step);
-    node.classList.toggle('locked',s>currentStep);
-    node.classList.toggle('current',s===currentStep);
+    const isCurrent = s===currentStep;
+    node.classList.toggle('locked',!isCurrent);
+    node.classList.toggle('current',isCurrent);
+    node.style.display = isCurrent ? 'block' : 'none'; // 一次只显示一个步骤
   });
   const p=document.getElementById('progress');
-  p.textContent = `当前：Step ${currentStep} / 6（${['产品类型','生命周期','活动目的','广告位','竞价策略','关键词属性'][currentStep-1]}）`;
+  p.textContent = `当前：Step ${currentStep} / 6（${['产品类型','当前周期','活动目的','广告位','竞价策略','关键词属性'][currentStep-1]}）`;
+  drawLinks();
 }
 function nextStep(){ if(currentStep<6){ currentStep++; updateStepUI(); } }
 function prevStep(){ if(currentStep>1){ currentStep--; updateStepUI(); } }
@@ -179,16 +183,20 @@ function drawLinks(){
 }
 
 function calc(){
-  const auto=1*state.bids;
-  const kw=3*state.kwAttrs*state.bids;
-  const prod=2*state.bids;
-  const base=auto+kw+prod;
-  const total=base*state.objectives*state.lifecycles*state.placements*state.productTypes;
-  document.getElementById('out').textContent=
-`基础组合 = 自动(1×${state.bids}) + 手动关键词(3×${state.kwAttrs}×${state.bids}) + 手动商品(2×${state.bids})\n= ${auto} + ${kw} + ${prod} = ${base}\n\n总组合 = ${base} × ${state.objectives} × ${state.lifecycles} × ${state.placements} × ${state.productTypes}\n= ${total}`;
+  const text =
+`当前已选路径：\n`+
+`产品类型：${state.productType}\n`+
+`当前周期：${state.lifecycle}\n`+
+`活动目的：${state.objective}\n`+
+`广告位：${state.placement}\n`+
+`竞价策略：${state.bid}\n`+
+`关键词属性：${state.kwAttr}\n\n`+
+`说明：这是“单路径一步步选择”模式，每次只确定 1 条投放路径。\n`+
+`如需看全量组合规模，再切回组合计算页。`;
+  document.getElementById('out').textContent=text;
 }
 
-function setPreset(){ state.productTypes=3;state.lifecycles=4;state.objectives=7;state.placements=3;state.bids=3;state.kwAttrs=13; currentStep=1; paintOptions(); updateStepUI(); calc(); }
+function setPreset(){ state.productType='标品';state.lifecycle='成长期';state.objective='出单';state.placement='Top of Search';state.bid='动态竞价-提高和降低';state.kwAttr='核心精准'; currentStep=1; paintOptions(); updateStepUI(); calc(); }
 function syncFromMain(){ alert('主站参数同步可按需再接入（当前先用独立工作流版）。'); }
 
 window.addEventListener('resize',drawLinks);

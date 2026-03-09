@@ -176,10 +176,14 @@ function drawLinks(){
   const c=document.getElementById('canvas');
   svg.setAttribute('width',c.scrollWidth);
   svg.setAttribute('height',c.scrollHeight);
-  const pairs=[['n0','n1'],['n0','n2'],['n0','n3'],['n0','n4'],['n1','n5'],['n2','n5'],['n3','n6'],['n4','n6'],['n5','n7'],['n6','n7'],['n7','n8']];
-  svg.innerHTML=pairs.map(([s,t])=>{
+  // 单线流程：Start -> Step1 -> Step2 -> Step3 -> Step4 -> Step5 -> Step6 -> Calc -> Output
+  const pairs=[['n0','n1'],['n1','n2'],['n2','n3'],['n3','n4'],['n4','n5'],['n5','n6'],['n6','n7'],['n7','n8']];
+  svg.innerHTML=pairs.map(([s,t],idx)=>{
     const a=nodeCenter(s,true), b=nodeCenter(t,false);
-    return `<path d="${path(a,b)}" stroke="${'#8ea2c4'}" stroke-width="2" fill="none" opacity="0.8"/>`;
+    const isActive = idx <= currentStep; // 当前步骤前的链路高亮
+    const stroke = isActive ? '#9ec5ff' : '#5f7192';
+    const op = isActive ? '0.95' : '0.45';
+    return `<path d="${path(a,b)}" stroke="${stroke}" stroke-width="2.5" fill="none" opacity="${op}"/>`;
   }).join('');
 }
 

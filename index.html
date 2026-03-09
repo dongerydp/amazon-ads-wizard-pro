@@ -60,6 +60,12 @@
     .node-option:hover{transform:translateY(-1px)}
     .node-option.active{background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff;border-color:transparent;box-shadow:0 6px 14px rgba(79,70,229,.25)}
     .step-hint{font-size:12px;color:#64748b;margin-top:6px}
+    .wf-wrap{position:relative;padding-left:34px}
+    .wf-wrap:before{content:"";position:absolute;left:15px;top:8px;bottom:8px;width:2px;background:linear-gradient(180deg,#c7d2fe,#a5b4fc,#818cf8);opacity:.8;border-radius:2px}
+    .wf-node{position:relative;padding:8px 0 8px 0}
+    .wf-node:before{content:"";position:absolute;left:-24px;top:18px;width:12px;height:12px;border-radius:50%;background:#d1d5db;border:2px solid #fff;box-shadow:0 0 0 2px #cbd5e1}
+    .wf-node.active:before{background:#6366f1;box-shadow:0 0 0 2px #818cf8}
+    .wf-label{font-size:11px;color:#64748b;margin-bottom:6px}
     @media (max-width:980px){.app{grid-template-columns:1fr}.side{height:auto;position:static}.top{flex-direction:column;align-items:flex-start;gap:6px}}
   </style>
 </head>
@@ -188,8 +194,10 @@
       <section class="card">
         <h3>组合幕布计算器（n8n风格简约选择）</h3>
 
-        <div class="step active" data-cstep="1">
+        <div class="wf-wrap">
+        <div class="step wf-node active" data-cstep="1">
           <div class="canvas-flow">
+            <div class="wf-label">Step 1</div>
             <label>步骤1：产品类型数</label>
             <div class="node-row" id="cProductTypesRow">
               <button class="node-option" data-key="productTypes" data-value="1" onclick="cPick(this)">1种</button>
@@ -201,7 +209,8 @@
           <div class="actions"><span></span><button class="btn pri" onclick="cNext()">下一步</button></div>
         </div>
 
-        <div class="step" data-cstep="2">
+        <div class="step wf-node" data-cstep="2">
+          <div class="wf-label">Step 2</div>
           <label>步骤2：生命周期数</label>
           <div class="node-row" id="cLifecyclesRow">
             <button class="node-option" data-key="lifecycles" data-value="1" onclick="cPick(this)">1</button>
@@ -212,7 +221,8 @@
           <div class="actions"><button class="btn" onclick="cPrev()">上一步</button><button class="btn pri" onclick="cNext()">下一步</button></div>
         </div>
 
-        <div class="step" data-cstep="3">
+        <div class="step wf-node" data-cstep="3">
+          <div class="wf-label">Step 3</div>
           <label>步骤3：活动目的数</label>
           <div class="node-row" id="cObjectivesRow">
             <button class="node-option" data-key="objectives" data-value="1" onclick="cPick(this)">1</button>
@@ -226,7 +236,8 @@
           <div class="actions"><button class="btn" onclick="cPrev()">上一步</button><button class="btn pri" onclick="cNext()">下一步</button></div>
         </div>
 
-        <div class="step" data-cstep="4">
+        <div class="step wf-node" data-cstep="4">
+          <div class="wf-label">Step 4</div>
           <label>步骤4：广告位类型数</label>
           <div class="node-row" id="cPlacementsRow">
             <button class="node-option" data-key="placements" data-value="1" onclick="cPick(this)">1</button>
@@ -236,7 +247,8 @@
           <div class="actions"><button class="btn" onclick="cPrev()">上一步</button><button class="btn pri" onclick="cNext()">下一步</button></div>
         </div>
 
-        <div class="step" data-cstep="5">
+        <div class="step wf-node" data-cstep="5">
+          <div class="wf-label">Step 5</div>
           <label>步骤5：竞价策略数</label>
           <div class="node-row" id="cBidsRow">
             <button class="node-option" data-key="bids" data-value="1" onclick="cPick(this)">1</button>
@@ -246,7 +258,8 @@
           <div class="actions"><button class="btn" onclick="cPrev()">上一步</button><button class="btn pri" onclick="cNext()">下一步</button></div>
         </div>
 
-        <div class="step" data-cstep="6">
+        <div class="step wf-node" data-cstep="6">
+          <div class="wf-label">Step 6</div>
           <label>步骤6：关键词属性数（仅手动关键词）</label>
           <div class="node-row" id="cKwAttrsRow">
             <button class="node-option" data-key="kwAttrs" data-value="1" onclick="cPick(this)">1</button>
@@ -258,7 +271,8 @@
           <div class="actions"><button class="btn" onclick="cPrev()">上一步</button><button class="btn pri" onclick="cNext()">下一步</button></div>
         </div>
 
-        <div class="step" data-cstep="7">
+        <div class="step wf-node" data-cstep="7">
+          <div class="wf-label">Step 7</div>
           <div class="actions" style="justify-content:flex-start;gap:8px">
             <button class="btn" onclick="cPrev()">上一步</button>
             <button class="btn pri" onclick="calcCanvasCombo()">计算组合数</button>
@@ -266,6 +280,7 @@
           </div>
           <div class="stats" id="canvasStats"></div>
           <div class="logic" id="canvasLogic"></div>
+        </div>
         </div>
       </section>
     </div>

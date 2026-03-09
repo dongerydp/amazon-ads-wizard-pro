@@ -5,14 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SP组合工作流画布（Graph）</title>
   <style>
-    :root{--bg:#0e1118;--panel:#141923;--card:#1a2130;--line:#8ea2c4;--muted:#8fa1bd;--txt:#e6edf7;--pri:#3b82f6;--ok:#22c55e}
+    :root{--bg:#0e1118;--panel:#141923;--card:#1a2130;--line:#8ea2c4;--muted:#8fa1bd;--txt:#e6edf7;--pri:#3b82f6;--ok:#22c55e;--canvas:#0f1522;--grid:rgba(255,255,255,.03);--topbg:#0f141f;--topline:#273043;--btnbg:#1a2334;--btnbd:#2b364d;--btntxt:#dbe6ff}
+    body.theme-light{--bg:#f2f6ff;--panel:#ffffff;--card:#ffffff;--line:#8ea2c4;--muted:#64748b;--txt:#0f172a;--pri:#2563eb;--ok:#16a34a;--canvas:#f8fbff;--grid:rgba(15,23,42,.06);--topbg:#ffffff;--topline:#dbe5f5;--btnbg:#ffffff;--btnbd:#cbd5e1;--btntxt:#1e293b}
     *{box-sizing:border-box}
     body{margin:0;background:radial-gradient(circle at 30% 10%,#182034 0%,#0d1117 52%);font-family:Inter,-apple-system,"PingFang SC",sans-serif;color:var(--txt)}
-    .top{padding:14px 16px;border-bottom:1px solid #273043;background:#0f141f;position:sticky;top:0;z-index:5}
+    body.theme-light{background:radial-gradient(circle at 30% 10%,#eaf1ff 0%,#f8fbff 52%)}
+    .top{padding:14px 16px;border-bottom:1px solid var(--topline);background:var(--topbg);position:sticky;top:0;z-index:5}
     .title{font-size:18px;font-weight:800}
     .sub{font-size:12px;color:var(--muted);margin-top:2px}
     .toolbar{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-    .btn{padding:8px 12px;border-radius:10px;border:1px solid #2b364d;background:#1a2334;color:#dbe6ff;cursor:pointer;font-weight:700}
+    .btn{padding:8px 12px;border-radius:10px;border:1px solid var(--btnbd);background:var(--btnbg);color:var(--btntxt);cursor:pointer;font-weight:700}
     .btn.pri{background:linear-gradient(135deg,#2563eb,#4f46e5);border:none}
     .badge{font-size:12px;color:#c7d2fe;border:1px solid #324463;padding:6px 10px;border-radius:999px}
 
@@ -22,9 +24,9 @@
     .welcome .wsub{font-size:13px;color:#9fb3d7;line-height:1.7}
     .canvas{position:relative;height:76vh;min-height:620px;border:1px solid #28344a;border-radius:14px;overflow:auto;
       background:
-      linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px) 0 0/24px 24px,
-      linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px) 0 0/24px 24px,
-      #0f1522;}
+      linear-gradient(var(--grid) 1px, transparent 1px) 0 0/24px 24px,
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0/24px 24px,
+      var(--canvas);}
     svg.links{position:absolute;inset:0;pointer-events:none}
 
     .node{position:absolute;width:220px;background:var(--card);border:1px solid #3a4866;border-radius:12px;padding:10px;box-shadow:0 8px 18px rgba(0,0,0,.28);transition:.2s;cursor:grab}
@@ -52,6 +54,7 @@
       <button class="btn" onclick="setPreset()">重置默认</button>
       <button class="btn" onclick="syncFromMain()">读取主向导参数</button>
       <button class="btn pri" onclick="calc()">计算组合数</button>
+      <button class="btn" onclick="toggleTheme()" id="themeBtn">切换浅色</button>
       <span class="badge" id="progress">当前：Step 1 / 6（先选产品类型）</span>
     </div>
   </div>
@@ -221,6 +224,12 @@ function startFlow(){
 }
 function setPreset(){ state.productType='标品';state.lifecycle='成长期';state.objective='出单';state.placement='Top of Search';state.bid='动态竞价-提高和降低';state.kwAttr='核心精准'; currentStep=1; paintOptions(); updateStepUI(); calc(); }
 function syncFromMain(){ alert('主站参数同步可按需再接入（当前先用独立工作流版）。'); }
+
+function toggleTheme(){
+  const light=document.body.classList.toggle('theme-light');
+  document.getElementById('themeBtn').textContent = light ? '切换深色' : '切换浅色';
+  setTimeout(drawLinks,0);
+}
 
 function initDrag(){
   const canvas=document.getElementById('canvas');

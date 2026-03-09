@@ -54,6 +54,12 @@
     .tab-pane{display:none}
     .tab-pane.active{display:block}
     .logic{font-size:12px;color:#334155;line-height:1.7;background:#f8fafc;border:1px solid #dbeafe;border-radius:12px;padding:10px;margin-top:10px;white-space:pre-wrap}
+    .canvas-flow{display:flex;flex-direction:column;gap:10px}
+    .node-row{display:flex;gap:8px;flex-wrap:wrap}
+    .node-option{padding:10px 12px;border-radius:12px;border:1px solid #d1d5db;background:#f3f4f6;color:#6b7280;cursor:pointer;font-size:12px;font-weight:700;transition:.15s}
+    .node-option:hover{transform:translateY(-1px)}
+    .node-option.active{background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff;border-color:transparent;box-shadow:0 6px 14px rgba(79,70,229,.25)}
+    .step-hint{font-size:12px;color:#64748b;margin-top:6px}
     @media (max-width:980px){.app{grid-template-columns:1fr}.side{height:auto;position:static}.top{flex-direction:column;align-items:flex-start;gap:6px}}
   </style>
 </head>
@@ -180,41 +186,75 @@
 
     <div id="tabCanvas" class="tab-pane">
       <section class="card">
-        <h3>组合幕布计算器（一步步选择）</h3>
+        <h3>组合幕布计算器（n8n风格简约选择）</h3>
 
         <div class="step active" data-cstep="1">
-          <label>步骤1：产品类型数</label>
-          <select id="cProductTypes"><option value="3" selected>3（标品/半标/非标）</option><option value="1">1</option><option value="2">2</option></select>
+          <div class="canvas-flow">
+            <label>步骤1：产品类型数</label>
+            <div class="node-row" id="cProductTypesRow">
+              <button class="node-option" data-key="productTypes" data-value="1" onclick="cPick(this)">1种</button>
+              <button class="node-option" data-key="productTypes" data-value="2" onclick="cPick(this)">2种</button>
+              <button class="node-option active" data-key="productTypes" data-value="3" onclick="cPick(this)">3种（标品/半标/非标）</button>
+            </div>
+            <div class="step-hint">灰色=未选中，高亮=已选中</div>
+          </div>
           <div class="actions"><span></span><button class="btn pri" onclick="cNext()">下一步</button></div>
         </div>
 
         <div class="step" data-cstep="2">
           <label>步骤2：生命周期数</label>
-          <select id="cLifecycles"><option value="4" selected>4（导入/成长/成熟/衰退）</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>
+          <div class="node-row" id="cLifecyclesRow">
+            <button class="node-option" data-key="lifecycles" data-value="1" onclick="cPick(this)">1</button>
+            <button class="node-option" data-key="lifecycles" data-value="2" onclick="cPick(this)">2</button>
+            <button class="node-option" data-key="lifecycles" data-value="3" onclick="cPick(this)">3</button>
+            <button class="node-option active" data-key="lifecycles" data-value="4" onclick="cPick(this)">4（导入/成长/成熟/衰退）</button>
+          </div>
           <div class="actions"><button class="btn" onclick="cPrev()">上一步</button><button class="btn pri" onclick="cNext()">下一步</button></div>
         </div>
 
         <div class="step" data-cstep="3">
           <label>步骤3：活动目的数</label>
-          <select id="cObjectives"><option value="7" selected>7（曝光/扩流/出单/盈利/推排名/防御/打标签）</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select>
+          <div class="node-row" id="cObjectivesRow">
+            <button class="node-option" data-key="objectives" data-value="1" onclick="cPick(this)">1</button>
+            <button class="node-option" data-key="objectives" data-value="2" onclick="cPick(this)">2</button>
+            <button class="node-option" data-key="objectives" data-value="3" onclick="cPick(this)">3</button>
+            <button class="node-option" data-key="objectives" data-value="4" onclick="cPick(this)">4</button>
+            <button class="node-option" data-key="objectives" data-value="5" onclick="cPick(this)">5</button>
+            <button class="node-option" data-key="objectives" data-value="6" onclick="cPick(this)">6</button>
+            <button class="node-option active" data-key="objectives" data-value="7" onclick="cPick(this)">7（当前定义）</button>
+          </div>
           <div class="actions"><button class="btn" onclick="cPrev()">上一步</button><button class="btn pri" onclick="cNext()">下一步</button></div>
         </div>
 
         <div class="step" data-cstep="4">
           <label>步骤4：广告位类型数</label>
-          <select id="cPlacements"><option value="3" selected>3（Top/Product/Rest）</option><option value="1">1</option><option value="2">2</option></select>
+          <div class="node-row" id="cPlacementsRow">
+            <button class="node-option" data-key="placements" data-value="1" onclick="cPick(this)">1</button>
+            <button class="node-option" data-key="placements" data-value="2" onclick="cPick(this)">2</button>
+            <button class="node-option active" data-key="placements" data-value="3" onclick="cPick(this)">3（Top/Product/Rest）</button>
+          </div>
           <div class="actions"><button class="btn" onclick="cPrev()">上一步</button><button class="btn pri" onclick="cNext()">下一步</button></div>
         </div>
 
         <div class="step" data-cstep="5">
           <label>步骤5：竞价策略数</label>
-          <select id="cBids"><option value="3" selected>3</option><option value="1">1</option><option value="2">2</option></select>
+          <div class="node-row" id="cBidsRow">
+            <button class="node-option" data-key="bids" data-value="1" onclick="cPick(this)">1</button>
+            <button class="node-option" data-key="bids" data-value="2" onclick="cPick(this)">2</button>
+            <button class="node-option active" data-key="bids" data-value="3" onclick="cPick(this)">3</button>
+          </div>
           <div class="actions"><button class="btn" onclick="cPrev()">上一步</button><button class="btn pri" onclick="cNext()">下一步</button></div>
         </div>
 
         <div class="step" data-cstep="6">
           <label>步骤6：关键词属性数（仅手动关键词）</label>
-          <select id="cKwAttrs"><option value="13" selected>13（昨天定义）</option><option value="1">1</option><option value="3">3</option><option value="5">5</option><option value="8">8</option></select>
+          <div class="node-row" id="cKwAttrsRow">
+            <button class="node-option" data-key="kwAttrs" data-value="1" onclick="cPick(this)">1</button>
+            <button class="node-option" data-key="kwAttrs" data-value="3" onclick="cPick(this)">3</button>
+            <button class="node-option" data-key="kwAttrs" data-value="5" onclick="cPick(this)">5</button>
+            <button class="node-option" data-key="kwAttrs" data-value="8" onclick="cPick(this)">8</button>
+            <button class="node-option active" data-key="kwAttrs" data-value="13" onclick="cPick(this)">13（昨天定义）</button>
+          </div>
           <div class="actions"><button class="btn" onclick="cPrev()">上一步</button><button class="btn pri" onclick="cNext()">下一步</button></div>
         </div>
 
@@ -235,6 +275,7 @@
 <script>
 const total=9; let cur=1; let generated=[];
 let cCur=1; const cTotal=7;
+const cData={productTypes:3,lifecycles:4,objectives:7,placements:3,bids:3,kwAttrs:13};
 const $=id=>document.getElementById(id); const selected=id=>[...$(id).selectedOptions].map(o=>o.value);
 const STEP_NAMES=['产品基础信息','目标与预算（必填）','产品类型选择','生命周期选择','广告活动目的（可多选）','SP投放模式（可多选）','匹配与定向设置','竞价与广告位设置','生成结果与导出'];
 
@@ -254,14 +295,20 @@ function cSetStep(n){
 }
 function cNext(){ if(cCur<cTotal) cSetStep(cCur+1); }
 function cPrev(){ if(cCur>1) cSetStep(cCur-1); }
+function cPick(el){
+  const key=el.dataset.key, value=Number(el.dataset.value);
+  cData[key]=value;
+  document.querySelectorAll(`.node-option[data-key="${key}"]`).forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
 
 function calcCanvasCombo(){
-  const bids=Number($('cBids').value||3);
-  const kwAttrs=Number($('cKwAttrs').value||13);
-  const objectives=Number($('cObjectives').value||7);
-  const lifecycles=Number($('cLifecycles').value||4);
-  const placements=Number($('cPlacements').value||3);
-  const productTypes=Number($('cProductTypes').value||3);
+  const bids=Number(cData.bids||3);
+  const kwAttrs=Number(cData.kwAttrs||13);
+  const objectives=Number(cData.objectives||7);
+  const lifecycles=Number(cData.lifecycles||4);
+  const placements=Number(cData.placements||3);
+  const productTypes=Number(cData.productTypes||3);
 
   const auto=1*bids;
   const kw=3*kwAttrs*bids;
@@ -288,16 +335,16 @@ function calcCanvasCombo(){
 }
 
 function loadCanvasFromWizard(){
-  const bids=Math.max(selected('bids').length,1);
-  const objectives=Math.max(selected('objectives').length,1);
-  const placements=Math.max(selected('placements').length,1);
-  const kwAttrs=Math.max(selected('kwAttr').length,1);
-  $('cBids').value=String(Math.min(3,bids));
-  $('cObjectives').value=String(objectives);
-  $('cPlacements').value=String(Math.min(3,placements));
-  $('cKwAttrs').value=String(kwAttrs);
-  $('cLifecycles').value='4';
-  $('cProductTypes').value='3';
+  cData.bids=Math.min(3,Math.max(selected('bids').length,1));
+  cData.objectives=Math.max(selected('objectives').length,1);
+  cData.placements=Math.min(3,Math.max(selected('placements').length,1));
+  cData.kwAttrs=Math.max(selected('kwAttr').length,1);
+  cData.lifecycles=4;
+  cData.productTypes=3;
+  // 同步高亮
+  Object.entries(cData).forEach(([key,val])=>{
+    document.querySelectorAll(`.node-option[data-key="${key}"]`).forEach(b=>b.classList.toggle('active',Number(b.dataset.value)===Number(val)));
+  });
   calcCanvasCombo();
 }
 function renderSteps(){const box=$('steps');box.innerHTML='';for(let i=1;i<=total;i++){const d=document.createElement('div');d.className='st'+(i===cur?' active':'');d.textContent=`步骤 ${i} / ${total} · ${STEP_NAMES[i-1]}`;d.onclick=()=>jumpTo(i);box.appendChild(d)}}

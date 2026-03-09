@@ -11,9 +11,10 @@
     .top{padding:14px 16px;border-bottom:1px solid #273043;background:#0f141f;position:sticky;top:0;z-index:5}
     .title{font-size:18px;font-weight:800}
     .sub{font-size:12px;color:var(--muted);margin-top:2px}
-    .toolbar{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+    .toolbar{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
     .btn{padding:8px 12px;border-radius:10px;border:1px solid #2b364d;background:#1a2334;color:#dbe6ff;cursor:pointer;font-weight:700}
     .btn.pri{background:linear-gradient(135deg,#2563eb,#4f46e5);border:none}
+    .badge{font-size:12px;color:#c7d2fe;border:1px solid #324463;padding:6px 10px;border-radius:999px}
 
     .wrap{padding:14px}
     .canvas{position:relative;height:76vh;min-height:620px;border:1px solid #28344a;border-radius:14px;overflow:auto;
@@ -23,7 +24,9 @@
       #0f1522;}
     svg.links{position:absolute;inset:0;pointer-events:none}
 
-    .node{position:absolute;width:220px;background:var(--card);border:1px solid #3a4866;border-radius:12px;padding:10px;box-shadow:0 8px 18px rgba(0,0,0,.28)}
+    .node{position:absolute;width:220px;background:var(--card);border:1px solid #3a4866;border-radius:12px;padding:10px;box-shadow:0 8px 18px rgba(0,0,0,.28);transition:.2s}
+    .node.locked{opacity:.35;filter:grayscale(.3)}
+    .node.current{box-shadow:0 0 0 2px #60a5fa,0 8px 18px rgba(0,0,0,.28)}
     .node .h{font-size:12px;color:#9cb0d4;margin-bottom:8px}
     .node .t{font-size:13px;font-weight:800;margin-bottom:8px}
     .opts{display:flex;gap:6px;flex-wrap:wrap}
@@ -39,9 +42,12 @@
     <div class="title">SP 组合工作流画布（n8n风格）</div>
     <div class="sub">灰色未选中 / 高亮已选中 · 连线流程图</div>
     <div class="toolbar">
-      <button class="btn" onclick="setPreset()">套用默认</button>
+      <button class="btn" onclick="prevStep()">上一步</button>
+      <button class="btn pri" onclick="nextStep()">下一步</button>
+      <button class="btn" onclick="setPreset()">重置默认</button>
       <button class="btn" onclick="syncFromMain()">读取主向导参数</button>
       <button class="btn pri" onclick="calc()">计算组合数</button>
+      <span class="badge" id="progress">当前：Step 1 / 6（先选产品类型）</span>
     </div>
   </div>
 
@@ -54,42 +60,42 @@
         <div style="font-size:12px;color:#9fb0cf">按流程逐步设定维度</div>
       </div>
 
-      <div class="node" id="n1" style="left:320px;top:40px">
+      <div class="node" id="n1" data-step="1" style="left:320px;top:40px">
         <div class="h">Step 1</div><div class="t">产品类型数</div>
         <div class="opts" data-key="productTypes" data-default="3">
           <button class="opt" data-v="1">1</button><button class="opt" data-v="2">2</button><button class="opt" data-v="3">3</button>
         </div>
       </div>
 
-      <div class="node" id="n2" style="left:320px;top:170px">
+      <div class="node" id="n2" data-step="2" style="left:320px;top:170px">
         <div class="h">Step 2</div><div class="t">生命周期数</div>
         <div class="opts" data-key="lifecycles" data-default="4">
           <button class="opt" data-v="1">1</button><button class="opt" data-v="2">2</button><button class="opt" data-v="3">3</button><button class="opt" data-v="4">4</button>
         </div>
       </div>
 
-      <div class="node" id="n3" style="left:320px;top:300px">
+      <div class="node" id="n3" data-step="3" style="left:320px;top:300px">
         <div class="h">Step 3</div><div class="t">活动目的数</div>
         <div class="opts" data-key="objectives" data-default="7">
           <button class="opt" data-v="1">1</button><button class="opt" data-v="2">2</button><button class="opt" data-v="3">3</button><button class="opt" data-v="4">4</button><button class="opt" data-v="5">5</button><button class="opt" data-v="6">6</button><button class="opt" data-v="7">7</button>
         </div>
       </div>
 
-      <div class="node" id="n4" style="left:320px;top:430px">
+      <div class="node" id="n4" data-step="4" style="left:320px;top:430px">
         <div class="h">Step 4</div><div class="t">广告位类型数</div>
         <div class="opts" data-key="placements" data-default="3">
           <button class="opt" data-v="1">1</button><button class="opt" data-v="2">2</button><button class="opt" data-v="3">3</button>
         </div>
       </div>
 
-      <div class="node" id="n5" style="left:620px;top:130px">
+      <div class="node" id="n5" data-step="5" style="left:620px;top:130px">
         <div class="h">Step 5</div><div class="t">竞价策略数</div>
         <div class="opts" data-key="bids" data-default="3">
           <button class="opt" data-v="1">1</button><button class="opt" data-v="2">2</button><button class="opt" data-v="3">3</button>
         </div>
       </div>
 
-      <div class="node" id="n6" style="left:620px;top:300px">
+      <div class="node" id="n6" data-step="6" style="left:620px;top:300px">
         <div class="h">Step 6</div><div class="t">关键词属性数</div>
         <div class="opts" data-key="kwAttrs" data-default="13">
           <button class="opt" data-v="1">1</button><button class="opt" data-v="3">3</button><button class="opt" data-v="5">5</button><button class="opt" data-v="8">8</button><button class="opt" data-v="13">13</button>
@@ -110,15 +116,24 @@
 
 <script>
 const state={productTypes:3,lifecycles:4,objectives:7,placements:3,bids:3,kwAttrs:13};
+const stepKeys=['productTypes','lifecycles','objectives','placements','bids','kwAttrs'];
+let currentStep=1;
 
 function initOptions(){
   document.querySelectorAll('.opts').forEach(group=>{
     const key=group.dataset.key;
     group.querySelectorAll('.opt').forEach(btn=>{
-      btn.onclick=()=>{state[key]=Number(btn.dataset.v);paintOptions();};
+      btn.onclick=()=>{
+        const step = stepKeys.indexOf(key)+1;
+        if(step>currentStep) return;
+        state[key]=Number(btn.dataset.v);
+        paintOptions();
+        if(step===currentStep && currentStep<6){ currentStep++; updateStepUI(); }
+      };
     });
   });
   paintOptions();
+  updateStepUI();
 }
 
 function paintOptions(){
@@ -127,6 +142,18 @@ function paintOptions(){
     group.querySelectorAll('.opt').forEach(btn=>btn.classList.toggle('active',Number(btn.dataset.v)===state[key]));
   });
 }
+
+function updateStepUI(){
+  document.querySelectorAll('.node[data-step]').forEach(node=>{
+    const s=Number(node.dataset.step);
+    node.classList.toggle('locked',s>currentStep);
+    node.classList.toggle('current',s===currentStep);
+  });
+  const p=document.getElementById('progress');
+  p.textContent = `当前：Step ${currentStep} / 6（${['产品类型','生命周期','活动目的','广告位','竞价策略','关键词属性'][currentStep-1]}）`;
+}
+function nextStep(){ if(currentStep<6){ currentStep++; updateStepUI(); } }
+function prevStep(){ if(currentStep>1){ currentStep--; updateStepUI(); } }
 
 function nodeCenter(id,right=true){
   const el=document.getElementById(id), c=document.getElementById('canvas');
@@ -161,7 +188,7 @@ function calc(){
 `基础组合 = 自动(1×${state.bids}) + 手动关键词(3×${state.kwAttrs}×${state.bids}) + 手动商品(2×${state.bids})\n= ${auto} + ${kw} + ${prod} = ${base}\n\n总组合 = ${base} × ${state.objectives} × ${state.lifecycles} × ${state.placements} × ${state.productTypes}\n= ${total}`;
 }
 
-function setPreset(){ state.productTypes=3;state.lifecycles=4;state.objectives=7;state.placements=3;state.bids=3;state.kwAttrs=13; paintOptions(); calc(); }
+function setPreset(){ state.productTypes=3;state.lifecycles=4;state.objectives=7;state.placements=3;state.bids=3;state.kwAttrs=13; currentStep=1; paintOptions(); updateStepUI(); calc(); }
 function syncFromMain(){ alert('主站参数同步可按需再接入（当前先用独立工作流版）。'); }
 
 window.addEventListener('resize',drawLinks);

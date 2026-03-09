@@ -28,6 +28,7 @@
     .node.dragging{cursor:grabbing}
     .node.locked{opacity:.35;filter:grayscale(.3)}
     .node.current{box-shadow:0 0 0 2px #60a5fa,0 8px 18px rgba(0,0,0,.28)}
+    .node.done{opacity:1;filter:none;border-color:#2f9e66;box-shadow:0 0 0 2px rgba(34,197,94,.35),0 8px 18px rgba(0,0,0,.28)}
     .node .h{font-size:12px;color:#9cb0d4;margin-bottom:8px}
     .node .t{font-size:13px;font-weight:800;margin-bottom:8px}
     .opts{display:flex;gap:6px;flex-wrap:wrap}
@@ -149,9 +150,11 @@ function updateStepUI(){
   document.querySelectorAll('.node[data-step]').forEach(node=>{
     const s=Number(node.dataset.step);
     const isCurrent = s===currentStep;
-    node.classList.toggle('locked',!isCurrent);
+    const isDone = s<currentStep;
+    node.classList.toggle('locked',!isCurrent && !isDone);
     node.classList.toggle('current',isCurrent);
-    node.style.display = 'block'; // 全部展示，当前步骤高亮；仅当前步骤可选
+    node.classList.toggle('done',isDone);
+    node.style.display = 'block';
   });
   const p=document.getElementById('progress');
   p.textContent = `当前：Step ${currentStep} / 6（${['产品类型','当前周期','活动目的','广告位','竞价策略','关键词属性'][currentStep-1]}）`;

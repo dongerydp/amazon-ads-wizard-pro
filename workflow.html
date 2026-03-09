@@ -17,6 +17,9 @@
     .badge{font-size:12px;color:#c7d2fe;border:1px solid #324463;padding:6px 10px;border-radius:999px}
 
     .wrap{padding:14px}
+    .welcome{border:1px solid #2b3a57;background:linear-gradient(135deg,#111a2b,#131f35);border-radius:14px;padding:20px;margin-bottom:12px}
+    .welcome .wtitle{font-size:20px;font-weight:800;margin-bottom:6px}
+    .welcome .wsub{font-size:13px;color:#9fb3d7;line-height:1.7}
     .canvas{position:relative;height:76vh;min-height:620px;border:1px solid #28344a;border-radius:14px;overflow:auto;
       background:
       linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px) 0 0/24px 24px,
@@ -54,7 +57,14 @@
   </div>
 
   <div class="wrap">
-    <div class="canvas" id="canvas">
+    <div class="welcome" id="welcome">
+      <div class="wtitle">先选产品类型，再逐步完成投放路径</div>
+      <div class="wsub">这是单线流程画布：产品类型 → 当前周期 → 活动目的 → 广告位 → 竞价策略 → 关键词属性。<br/>点击「开始配置」后进入流程，页面不混杂，按步骤推进。</div>
+      <div class="toolbar" style="margin-top:12px">
+        <button class="btn pri" onclick="startFlow()">开始配置</button>
+      </div>
+    </div>
+    <div class="canvas" id="canvas" style="display:none">
       <svg class="links" id="links"></svg>
 
       <div class="node" id="n0" style="left:40px;top:250px">
@@ -204,6 +214,11 @@ function calc(){
   document.getElementById('out').textContent=text;
 }
 
+function startFlow(){
+  document.getElementById('welcome').style.display='none';
+  document.getElementById('canvas').style.display='block';
+  drawLinks();
+}
 function setPreset(){ state.productType='标品';state.lifecycle='成长期';state.objective='出单';state.placement='Top of Search';state.bid='动态竞价-提高和降低';state.kwAttr='核心精准'; currentStep=1; paintOptions(); updateStepUI(); calc(); }
 function syncFromMain(){ alert('主站参数同步可按需再接入（当前先用独立工作流版）。'); }
 

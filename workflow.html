@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SP组合工作流画布</title>
+  <style>
+    :root{--bg:#0b1020;--panel:#121a31;--card:#f8fafc;--pri:#6366f1;--pri2:#8b5cf6;--muted:#94a3b8}
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,-apple-system,"PingFang SC",sans-serif;background:linear-gradient(135deg,#0b1020,#111a3a);color:#e2e8f0}
+    .app{max-width:1080px;margin:20px auto;padding:0 16px}
+    .head{font-size:24px;font-weight:800;margin:10px 0}
+    .sub{font-size:12px;color:#93c5fd;margin-bottom:12px}
+    .card{background:var(--card);color:#0f172a;border-radius:16px;padding:16px;border:1px solid #dbeafe}
+    .flow{position:relative;padding-left:34px;display:flex;flex-direction:column;gap:10px}
+    .flow:before{content:"";position:absolute;left:15px;top:8px;bottom:8px;width:2px;background:linear-gradient(180deg,#c7d2fe,#818cf8);border-radius:2px}
+    .step{position:relative;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:12px}
+    .step:before{content:"";position:absolute;left:-24px;top:16px;width:12px;height:12px;border-radius:50%;background:#cbd5e1;border:2px solid #fff;box-shadow:0 0 0 2px #cbd5e1}
+    .step.active:before{background:var(--pri);box-shadow:0 0 0 2px #a5b4fc}
+    .label{font-size:12px;color:#64748b;margin-bottom:8px}
+    .row{display:flex;gap:8px;flex-wrap:wrap}
+    .opt{padding:8px 12px;border-radius:999px;border:1px solid #d1d5db;background:#f3f4f6;color:#6b7280;font-size:12px;font-weight:700;cursor:pointer}
+    .opt.active{background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff;border-color:transparent}
+    .actions{margin-top:8px;display:flex;gap:8px}
+    .btn{border:1px solid #cbd5e1;background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer;font-weight:700}
+    .btn.pri{background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff;border:none}
+    .out{margin-top:12px;background:#eef2ff;border:1px solid #c7d2fe;border-radius:12px;padding:10px;font-size:12px;white-space:pre-wrap}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="head">SP组合工作流画布</div>
+    <div class="sub">简约 · 节点高亮 · 连线风格（n8n-like）</div>
+    <div class="card">
+      <div class="flow" id="flow"></div>
+      <div class="out" id="out">点击“计算组合数”查看结果</div>
+    </div>
+  </div>
+<script>
+const data={productTypes:3,lifecycles:4,objectives:7,placements:3,bids:3,kwAttrs:13};
+const defs=[
+  ['productTypes','产品类型数',['1','2','3']],
+  ['lifecycles','生命周期数',['1','2','3','4']],
+  ['objectives','活动目的数',['1','2','3','4','5','6','7']],
+  ['placements','广告位类型数',['1','2','3']],
+  ['bids','竞价策略数',['1','2','3']],
+  ['kwAttrs','关键词属性数（仅手动关键词）',['1','3','5','8','13']]
+];
+let cur=1;
+function render(){
+  const box=document.getElementById('flow'); box.innerHTML='';
+  defs.forEach((d,i)=>{
+    const [k,title,vals]=d; const step=i+1;
+    const div=document.createElement('div'); div.className='step'+(step===cur?' active':'');
+    div.style.display = step===cur || step===7 ? 'block':'none';
+    div.innerHTML=`<div class="label">Step ${step}</div><div style="font-weight:700;margin-bottom:8px">${title}</div><div class="row">${vals.map(v=>`<button class="opt ${String(data[k])===v?'active':''}" onclick="pick('${k}',${v})">${v}</button>`).join('')}</div><div class="actions">${step>1?'<button class="btn" onclick="prev()">上一步</button>':''}${step<6?'<button class="btn pri" onclick="next()">下一步</button>':'<button class="btn pri" onclick="calc()">计算组合数</button>'}</div>`;
+    box.appendChild(div);
+  });
+}
+function pick(k,v){data[k]=v; render();}
+function next(){if(cur<6)cur++; render();}
+function prev(){if(cur>1)cur--; render();}
+function calc(){
+  const auto=1*data.bids;
+  const kw=3*data.kwAttrs*data.bids;
+  const prod=2*data.bids;
+  const base=auto+kw+prod;
+  const total=base*data.objectives*data.lifecycles*data.placements*data.productTypes;
+  document.getElementById('out').textContent=`基础组合 = 自动(1×${data.bids}) + 手动关键词(3×${data.kwAttrs}×${data.bids}) + 手动商品(2×${data.bids})\n= ${auto}+${kw}+${prod} = ${base}\n\n总组合 = ${base}×${data.objectives}×${data.lifecycles}×${data.placements}×${data.productTypes}\n= ${total}`;
+}
+render();
+</script>
+</body>
+</html>

@@ -117,12 +117,12 @@
         </div>
       </div>
 
-      <div class="node calc" id="n7" style="left:910px;top:220px">
+      <div class="node calc" id="n7" style="left:910px;top:220px;display:none">
         <div class="h">Step 7</div><div class="t">计算总组合</div>
         <button class="btn pri" onclick="calc()">计算</button>
       </div>
 
-      <div class="node" id="n8" style="left:1180px;top:180px;width:300px">
+      <div class="node" id="n8" style="left:1180px;top:180px;width:300px;display:none">
         <div class="h">Output</div><div class="t">结果</div>
         <div class="result" id="out">点击“计算”查看</div>
       </div>
@@ -167,8 +167,13 @@ function updateStepUI(){
     node.classList.toggle('locked',!isCurrent && !isDone);
     node.classList.toggle('current',isCurrent);
     node.classList.toggle('done',isDone);
-    node.style.display = 'block';
+    // 只显示已完成+当前步骤；后续未选步骤不显示
+    node.style.display = (isDone || isCurrent) ? 'block' : 'none';
   });
+  // 计算与输出节点仅在完成所有步骤后显示
+  document.getElementById('n7').style.display = currentStep>=6 ? 'block' : 'none';
+  document.getElementById('n8').style.display = currentStep>=6 ? 'block' : 'none';
+
   const p=document.getElementById('progress');
   p.textContent = `当前：Step ${currentStep} / 6（${['产品类型','当前周期','活动目的','广告位','竞价策略','关键词属性'][currentStep-1]}）`;
   drawLinks();
@@ -195,8 +200,10 @@ function drawLinks(){
   // 单线流程：Start -> Step1 -> Step2 -> Step3 -> Step4 -> Step5 -> Step6 -> Calc -> Output
   const pairs=[['n0','n1'],['n1','n2'],['n2','n3'],['n3','n4'],['n4','n5'],['n5','n6'],['n6','n7'],['n7','n8']];
   svg.innerHTML=pairs.map(([s,t],idx)=>{
+    const se=document.getElementById(s), te=document.getElementById(t);
+    if(!se || !te || se.style.display==='none' || te.style.display==='none') return '';
     const a=nodeCenter(s,true), b=nodeCenter(t,false);
-    const isActive = idx <= currentStep; // 当前步骤前的链路高亮
+    const isActive = idx <= currentStep;
     const stroke = isActive ? '#9ec5ff' : '#5f7192';
     const op = isActive ? '0.95' : '0.45';
     return `<path d="${path(a,b)}" stroke="${stroke}" stroke-width="2.5" fill="none" opacity="${op}"/>`;

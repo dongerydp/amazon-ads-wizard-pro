@@ -181,20 +181,52 @@
     <div id="tabCanvas" class="tab-pane">
       <section class="card">
         <h3>组合幕布计算器（一步步选择）</h3>
-        <div class="grid">
-          <div><label>步骤1：产品类型数</label><select id="cProductTypes"><option value="3" selected>3（标品/半标/非标）</option><option value="1">1</option><option value="2">2</option></select></div>
-          <div><label>步骤2：生命周期数</label><select id="cLifecycles"><option value="4" selected>4（导入/成长/成熟/衰退）</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
-          <div><label>步骤3：活动目的数</label><select id="cObjectives"><option value="7" selected>7（曝光/扩流/出单/盈利/推排名/防御/打标签）</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select></div>
-          <div><label>步骤4：广告位类型数</label><select id="cPlacements"><option value="3" selected>3（Top/Product/Rest）</option><option value="1">1</option><option value="2">2</option></select></div>
-          <div><label>步骤5：竞价策略数</label><select id="cBids"><option value="3" selected>3</option><option value="1">1</option><option value="2">2</option></select></div>
-          <div><label>步骤6：关键词属性数（仅手动关键词）</label><select id="cKwAttrs"><option value="13" selected>13（昨天定义）</option><option value="1">1</option><option value="3">3</option><option value="5">5</option><option value="8">8</option></select></div>
+
+        <div class="step active" data-cstep="1">
+          <label>步骤1：产品类型数</label>
+          <select id="cProductTypes"><option value="3" selected>3（标品/半标/非标）</option><option value="1">1</option><option value="2">2</option></select>
+          <div class="actions"><span></span><button class="btn pri" onclick="cNext()">下一步</button></div>
         </div>
-        <div class="actions" style="justify-content:flex-start;gap:8px">
-          <button class="btn pri" onclick="calcCanvasCombo()">计算组合数</button>
-          <button class="btn" onclick="loadCanvasFromWizard()">读取向导当前选择</button>
+
+        <div class="step" data-cstep="2">
+          <label>步骤2：生命周期数</label>
+          <select id="cLifecycles"><option value="4" selected>4（导入/成长/成熟/衰退）</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>
+          <div class="actions"><button class="btn" onclick="cPrev()">上一步</button><button class="btn pri" onclick="cNext()">下一步</button></div>
         </div>
-        <div class="stats" id="canvasStats"></div>
-        <div class="logic" id="canvasLogic"></div>
+
+        <div class="step" data-cstep="3">
+          <label>步骤3：活动目的数</label>
+          <select id="cObjectives"><option value="7" selected>7（曝光/扩流/出单/盈利/推排名/防御/打标签）</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select>
+          <div class="actions"><button class="btn" onclick="cPrev()">上一步</button><button class="btn pri" onclick="cNext()">下一步</button></div>
+        </div>
+
+        <div class="step" data-cstep="4">
+          <label>步骤4：广告位类型数</label>
+          <select id="cPlacements"><option value="3" selected>3（Top/Product/Rest）</option><option value="1">1</option><option value="2">2</option></select>
+          <div class="actions"><button class="btn" onclick="cPrev()">上一步</button><button class="btn pri" onclick="cNext()">下一步</button></div>
+        </div>
+
+        <div class="step" data-cstep="5">
+          <label>步骤5：竞价策略数</label>
+          <select id="cBids"><option value="3" selected>3</option><option value="1">1</option><option value="2">2</option></select>
+          <div class="actions"><button class="btn" onclick="cPrev()">上一步</button><button class="btn pri" onclick="cNext()">下一步</button></div>
+        </div>
+
+        <div class="step" data-cstep="6">
+          <label>步骤6：关键词属性数（仅手动关键词）</label>
+          <select id="cKwAttrs"><option value="13" selected>13（昨天定义）</option><option value="1">1</option><option value="3">3</option><option value="5">5</option><option value="8">8</option></select>
+          <div class="actions"><button class="btn" onclick="cPrev()">上一步</button><button class="btn pri" onclick="cNext()">下一步</button></div>
+        </div>
+
+        <div class="step" data-cstep="7">
+          <div class="actions" style="justify-content:flex-start;gap:8px">
+            <button class="btn" onclick="cPrev()">上一步</button>
+            <button class="btn pri" onclick="calcCanvasCombo()">计算组合数</button>
+            <button class="btn" onclick="loadCanvasFromWizard()">读取向导当前选择</button>
+          </div>
+          <div class="stats" id="canvasStats"></div>
+          <div class="logic" id="canvasLogic"></div>
+        </div>
       </section>
     </div>
   </main>
@@ -202,6 +234,7 @@
 
 <script>
 const total=9; let cur=1; let generated=[];
+let cCur=1; const cTotal=7;
 const $=id=>document.getElementById(id); const selected=id=>[...$(id).selectedOptions].map(o=>o.value);
 const STEP_NAMES=['产品基础信息','目标与预算（必填）','产品类型选择','生命周期选择','广告活动目的（可多选）','SP投放模式（可多选）','匹配与定向设置','竞价与广告位设置','生成结果与导出'];
 
@@ -211,8 +244,16 @@ function switchTab(tab){
   $('tabCanvas').classList.toggle('active',!wizard);
   $('tabBtnWizard').classList.toggle('active',wizard);
   $('tabBtnCanvas').classList.toggle('active',!wizard);
-  $('stepTitle').textContent = wizard ? `步骤 ${cur} / ${total} · ${STEP_NAMES[cur-1]}` : '组合幕布计算器 · 一步步选择并实时计算';
+  $('stepTitle').textContent = wizard ? `步骤 ${cur} / ${total} · ${STEP_NAMES[cur-1]}` : `组合幕布计算器 · 步骤 ${cCur} / ${cTotal}`;
 }
+function cSetStep(n){
+  cCur=n;
+  document.querySelectorAll('[data-cstep]').forEach(s=>s.classList.remove('active'));
+  document.querySelector(`[data-cstep="${n}"]`)?.classList.add('active');
+  if($('tabCanvas').classList.contains('active')) $('stepTitle').textContent=`组合幕布计算器 · 步骤 ${cCur} / ${cTotal}`;
+}
+function cNext(){ if(cCur<cTotal) cSetStep(cCur+1); }
+function cPrev(){ if(cCur>1) cSetStep(cCur-1); }
 
 function calcCanvasCombo(){
   const bids=Number($('cBids').value||3);
@@ -516,6 +557,6 @@ setMultiSelected('kwAttr',['核心精准','自有品牌词']);
 setMultiSelected('autoSub',['Close Match','Loose Match']);
 setMultiSelected('bids',['动态竞价-提高和降低']);
 setMultiSelected('placements',['Top of Search','Product Pages']);
-setStep(1);toggleFields();refreshSummary();calcCanvasCombo();
+setStep(1);toggleFields();refreshSummary();cSetStep(1);calcCanvasCombo();
 </script>
 </body></html>

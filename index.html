@@ -5,107 +5,56 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Amazon Ads 决策向导 Pro</title>
   <style>
-    :root{
-      --bg:#070b14;--bg2:#0d1324;--panel:rgba(18,24,44,.72);--card:rgba(255,255,255,.88);
-      --text:#0f172a;--muted:#64748b;--pri:#4f46e5;--pri2:#7c3aed;--ok:#059669;--line:#dbe4ff;
-      --ring:0 0 0 3px rgba(99,102,241,.22);
-    }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
-      background:radial-gradient(1200px 500px at 10% -10%,#1f2a4d 0%,transparent 60%),
-                 radial-gradient(1000px 500px at 90% -20%,#312e81 0%,transparent 55%),
-                 linear-gradient(135deg,var(--bg),var(--bg2));
-      color:#e5e7eb}
-    .app{max-width:1280px;margin:22px auto;padding:0 16px;display:grid;grid-template-columns:310px 1fr;gap:16px}
-    .side{background:var(--panel);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.16);border-radius:18px;padding:16px;color:#e2e8f0;height:calc(100vh - 44px);position:sticky;top:22px;box-shadow:0 12px 40px rgba(0,0,0,.28)}
-    .brand{font-size:18px;font-weight:800;letter-spacing:.2px;margin-bottom:6px}
-    .sub{font-size:12px;color:#93c5fd;margin-bottom:14px}
-    .steps{display:flex;flex-direction:column;gap:9px}
-    .st{padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.04);font-size:12px;border:1px solid transparent;cursor:pointer;user-select:none;transition:.2s}
-    .st:hover{border-color:rgba(129,140,248,.7);transform:translateX(2px)}
-    .st.active{background:linear-gradient(90deg,rgba(79,70,229,.35),rgba(124,58,237,.25));border-color:#a5b4fc;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
-    .main{background:linear-gradient(180deg,rgba(248,250,252,.97),rgba(241,245,249,.96));border-radius:18px;padding:16px;min-height:calc(100vh - 44px);box-shadow:0 12px 36px rgba(2,6,23,.24)}
-    .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding:14px 16px;border-radius:14px;background:linear-gradient(90deg,#eef2ff,#f5f3ff);border:1px solid #dbe4ff}
-    .title{font-size:24px;font-weight:800;color:#1e1b4b}.hint{font-size:12px;color:#475569}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 8px 24px rgba(15,23,42,.06)}
-    .card h3{margin:0 0 12px;color:#111827}
-    .step{display:none}.step.active{display:block;animation:fade .24s ease}
-    @keyframes fade{from{opacity:.25;transform:translateY(4px)}to{opacity:1;transform:none}}
+    :root{--bg:#0b1020;--panel:#121935;--card:#fff;--text:#0f172a;--muted:#64748b;--pri:#2563eb;--ok:#059669;--line:#e2e8f0}
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:linear-gradient(135deg,#0b1020,#111a3a);color:#0f172a}
+    .app{max-width:1200px;margin:20px auto;padding:0 14px;display:grid;grid-template-columns:280px 1fr;gap:14px}
+    .side{background:rgba(255,255,255,.08);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:14px;color:#e2e8f0;height:calc(100vh - 40px);position:sticky;top:20px}
+    .brand{font-size:18px;font-weight:700;margin-bottom:8px}.sub{font-size:12px;color:#94a3b8;margin-bottom:12px}
+    .steps{display:flex;flex-direction:column;gap:8px}
+    .st{padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.05);font-size:13px;border:1px solid transparent;cursor:pointer;user-select:none}
+    .st:hover{border-color:rgba(96,165,250,.6)}
+    .st.active{background:rgba(37,99,235,.25);border-color:#60a5fa}
+    .main{background:#f8fafc;border-radius:16px;padding:14px;min-height:calc(100vh - 40px)}
+    .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .title{font-size:22px;font-weight:800}.hint{font-size:12px;color:#64748b}
+    .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px}
+    .step{display:none}.step.active{display:block}
     .grid{display:grid;grid-template-columns:repeat(2,minmax(240px,1fr));gap:12px}
-    label{display:block;font-size:12px;color:#475569;margin-bottom:6px;font-weight:600}
-    input,select{width:100%;padding:11px 12px;border:1px solid #c7d2fe;border-radius:12px;background:#fff;color:#0f172a;transition:.18s}
-    input:focus,select:focus{outline:none;border-color:#818cf8;box-shadow:var(--ring)}
-    select[multiple]{min-height:130px}
-    .actions{display:flex;justify-content:space-between;margin-top:14px}
-    .btn{border:1px solid #cbd5e1;background:#fff;border-radius:12px;padding:10px 15px;cursor:pointer;font-weight:700;color:#334155;transition:.18s}
-    .btn:hover{transform:translateY(-1px);box-shadow:0 6px 14px rgba(15,23,42,.08)}
-    .btn.pri{background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff;border:none}
+    label{display:block;font-size:12px;color:#475569;margin-bottom:6px}
+    input,select{width:100%;padding:10px 11px;border:1px solid #cbd5e1;border-radius:10px;background:#fff}
+    select[multiple]{min-height:120px}
+    .actions{display:flex;justify-content:space-between;margin-top:12px}
+    .btn{border:1px solid #cbd5e1;background:#fff;border-radius:10px;padding:10px 14px;cursor:pointer;font-weight:600}
+    .btn.pri{background:var(--pri);color:#fff;border-color:var(--pri)}
     .stats{display:flex;gap:10px;flex-wrap:wrap}
-    .pill{background:#eef2ff;border:1px solid #c7d2fe;color:#3730a3;padding:7px 11px;border-radius:999px;font-size:12px;font-weight:600}
+    .pill{background:#eef2ff;border:1px solid #c7d2fe;color:#3730a3;padding:6px 10px;border-radius:999px;font-size:12px}
     .hidden{display:none!important}
-    table{width:100%;border-collapse:collapse;font-size:12px}th,td{border-bottom:1px solid #e2e8f0;padding:9px 8px;text-align:left}
-    th{background:#eef2ff;position:sticky;top:0;color:#312e81}
-    .box{max-height:52vh;overflow:auto;border:1px solid #dbe4ff;border-radius:12px;background:#fff}
-    .ai-box{margin-top:10px;padding:10px 12px;border:1px dashed #a5b4fc;border-radius:12px;background:#eef2ff;color:#312e81;font-size:12px;white-space:pre-wrap}
-    .ai-actions{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
-    .tabs{display:flex;gap:8px;margin:8px 0 12px 0;flex-wrap:wrap}
-    .tab-btn{border:1px solid #cbd5e1;background:#fff;border-radius:999px;padding:8px 14px;cursor:pointer;font-weight:700;color:#334155}
-    .tab-btn.active{background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff;border:none}
-    .tab-pane{display:none}
-    .tab-pane.active{display:block}
-    .logic{font-size:12px;color:#334155;line-height:1.7;background:#f8fafc;border:1px solid #dbeafe;border-radius:12px;padding:10px;margin-top:10px;white-space:pre-wrap}
-    .canvas-flow{display:flex;flex-direction:column;gap:10px}
-    .node-row{display:flex;gap:8px;flex-wrap:wrap}
-    .node-option{padding:10px 12px;border-radius:12px;border:1px solid #d1d5db;background:#f3f4f6;color:#6b7280;cursor:pointer;font-size:12px;font-weight:700;transition:.15s}
-    .node-option:hover{transform:translateY(-1px)}
-    .node-option.active{background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff;border-color:transparent;box-shadow:0 6px 14px rgba(79,70,229,.25)}
-    .step-hint{font-size:12px;color:#64748b;margin-top:6px}
-    .wf-wrap{position:relative;padding-left:34px}
-    .wf-wrap:before{content:"";position:absolute;left:15px;top:8px;bottom:8px;width:2px;background:linear-gradient(180deg,#c7d2fe,#a5b4fc,#818cf8);opacity:.8;border-radius:2px}
-    .wf-node{position:relative;padding:8px 0 8px 0}
-    .wf-node:before{content:"";position:absolute;left:-24px;top:18px;width:12px;height:12px;border-radius:50%;background:#d1d5db;border:2px solid #fff;box-shadow:0 0 0 2px #cbd5e1}
-    .wf-node.active:before{background:#6366f1;box-shadow:0 0 0 2px #818cf8}
-    .wf-label{font-size:11px;color:#64748b;margin-bottom:6px}
-    @media (max-width:980px){.app{grid-template-columns:1fr}.side{height:auto;position:static}.top{flex-direction:column;align-items:flex-start;gap:6px}}
+    table{width:100%;border-collapse:collapse;font-size:12px}th,td{border-bottom:1px solid #e2e8f0;padding:8px;text-align:left}th{background:#f8fafc;position:sticky;top:0}
+    .box{max-height:52vh;overflow:auto;border:1px solid #e2e8f0;border-radius:12px}
+    @media (max-width:980px){.app{grid-template-columns:1fr}.side{height:auto;position:static}}
   </style>
 </head>
 <body>
 <div class="app">
   <aside class="side">
     <div class="brand">Amazon Ads 决策向导 Pro</div>
-    <div class="sub">Modern UI · SaaS 风格 · 智能组合</div>
+    <div class="sub">美观版 · 交互式流程 · 自动组合</div>
     <div class="steps" id="steps"></div>
   </aside>
 
   <main class="main">
     <div class="top">
       <div class="title" id="stepTitle">步骤 1 / 9 · 产品基础信息</div>
-      <div class="hint">现代版：视觉升级 · 动效升级 · 保留原有逻辑</div>
+      <div class="hint">已加入：预算、预计CVR、利润率、月销目标</div>
     </div>
-
-    <div class="tabs">
-      <button class="tab-btn active" id="tabBtnWizard" onclick="switchTab('wizard')">向导配置</button>
-      <button class="tab-btn" id="tabBtnCanvas" onclick="switchTab('canvas')">组合幕布计算器</button>
-    </div>
-
-    <div id="tabWizard" class="tab-pane active">
-    <section class="card" style="margin-bottom:10px">
-      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between">
-        <div>
-          <div style="font-weight:700;color:#1f2937">AI 运行模式：免填后端代理版</div>
-          <div style="font-size:12px;color:#475569">前端不再需要输入任何 Key，统一走服务端代理（Codex/Gemini）。</div>
-        </div>
-        <div id="aiCfgTip" style="font-size:12px;color:#065f46;background:#ecfdf5;border:1px solid #a7f3d0;padding:6px 10px;border-radius:999px">代理状态：已启用</div>
-      </div>
-    </section>
 
     <section class="card step active" data-step="1">
       <h3>产品基础信息</h3>
       <div class="grid">
-        <div><label>产品名称</label><input id="productName" placeholder="例如：Standing Desk" value="Standing Desk Pro"/></div>
-        <div><label>站点</label><select id="market"><option selected>US</option><option>CA</option><option>UK</option><option>DE</option><option>JP</option></select></div>
-        <div><label>类目</label><input id="category" placeholder="Home & Kitchen" value="Home & Kitchen"/></div>
-        <div><label>价格带</label><input id="priceBand" placeholder="$49-$89" value="$89-$149"/></div>
+        <div><label>产品名称</label><input id="productName" placeholder="例如：Standing Desk"/></div>
+        <div><label>站点</label><select id="market"><option>US</option><option>CA</option><option>UK</option><option>DE</option><option>JP</option></select></div>
+        <div><label>类目</label><input id="category" placeholder="Home & Kitchen"/></div>
+        <div><label>价格带</label><input id="priceBand" placeholder="$49-$89"/></div>
       </div>
       <div class="actions"><span></span><button class="btn pri" onclick="next()">下一步</button></div>
     </section>
@@ -123,27 +72,23 @@
         <button class="btn" type="button" onclick="applyPreset()">套用模板</button>
       </div>
       <div class="grid">
-        <div><label>月销目标（销售额）</label><input id="monthlySalesTarget" type="number" placeholder="例如 100000" value="120000"/></div>
-        <div><label>广告预算上限（月）</label><input id="monthlyAdBudget" type="number" placeholder="例如 12000" value="15000"/></div>
-        <div><label>预计转化率 CVR（%）</label><input id="expectedCVR" type="number" step="0.1" placeholder="例如 8" value="9.5"/></div>
-        <div><label>定价利润率（不含广告，%）</label><input id="marginNoAds" type="number" step="0.1" placeholder="例如 32" value="34"/></div>
+        <div><label>月销目标（销售额）</label><input id="monthlySalesTarget" type="number" placeholder="例如 100000"/></div>
+        <div><label>广告预算上限（月）</label><input id="monthlyAdBudget" type="number" placeholder="例如 12000"/></div>
+        <div><label>预计转化率 CVR（%）</label><input id="expectedCVR" type="number" step="0.1" placeholder="例如 8"/></div>
+        <div><label>定价利润率（不含广告，%）</label><input id="marginNoAds" type="number" step="0.1" placeholder="例如 32"/></div>
       </div>
       <div class="stats" id="derived"></div>
-      <div class="ai-actions"><button class="btn" type="button" onclick="aiSuggestBudget()">AI预算建议</button></div>
-      <div class="ai-box" id="aiBudget" style="display:none"></div>
       <div class="actions"><button class="btn" onclick="prev()">上一步</button><button class="btn pri" onclick="calcAndNext()">下一步</button></div>
     </section>
 
-    <section class="card step" data-step="3"><h3>产品类型选择</h3><select id="productType"><option selected>标品</option><option>半标品</option><option>非标品</option></select><div class="actions"><button class="btn" onclick="prev()">上一步</button><button class="btn pri" onclick="next()">下一步</button></div></section>
-    <section class="card step" data-step="4"><h3>生命周期选择</h3><select id="lifecycle"><option>导入期</option><option selected>成长期</option><option>成熟期</option><option>衰退期</option></select><div class="actions"><button class="btn" onclick="prev()">上一步</button><button class="btn pri" onclick="next()">下一步</button></div></section>
+    <section class="card step" data-step="3"><h3>产品类型选择</h3><select id="productType"><option>标品</option><option>半标品</option><option>非标品</option></select><div class="actions"><button class="btn" onclick="prev()">上一步</button><button class="btn pri" onclick="next()">下一步</button></div></section>
+    <section class="card step" data-step="4"><h3>生命周期选择</h3><select id="lifecycle"><option>导入期</option><option>成长期</option><option>成熟期</option><option>衰退期</option></select><div class="actions"><button class="btn" onclick="prev()">上一步</button><button class="btn pri" onclick="next()">下一步</button></div></section>
 
     <section class="card step" data-step="5">
       <h3>广告活动目的（可多选）</h3>
       <select id="objectives" multiple>
         <option>曝光</option><option>扩流</option><option>出单</option><option>盈利</option><option>推排名</option><option>防御</option><option>打标签</option>
       </select>
-      <div class="ai-actions"><button class="btn" type="button" onclick="aiSuggestObjectives()">AI目的建议</button></div>
-      <div class="ai-box" id="aiObjectives" style="display:none"></div>
       <div class="actions"><button class="btn" onclick="prev()">上一步</button><button class="btn pri" onclick="next()">下一步</button></div>
     </section>
 
@@ -163,8 +108,6 @@
           <option>核心精准</option><option>核心次精准</option><option>核心长尾</option><option>品类大词</option><option>大品牌词</option><option>竞品品牌词</option><option>自有品牌词</option><option>互补词</option><option>gift词</option><option>促销词</option><option>不相关词</option><option>外语词</option><option>错拼词</option>
         </select></div>
       </div>
-      <div class="ai-actions"><button class="btn" type="button" onclick="aiSuggestTargeting()">AI匹配建议</button></div>
-      <div class="ai-box" id="aiTargeting" style="display:none"></div>
       <div class="actions"><button class="btn" onclick="prev()">上一步</button><button class="btn pri" onclick="next()">下一步</button></div>
     </section>
 
@@ -174,8 +117,6 @@
         <div><label>竞价策略</label><select id="bids" multiple><option>动态竞价-只降低</option><option>动态竞价-提高和降低</option><option>固定竞价</option></select></div>
         <div><label>广告位</label><select id="placements" multiple><option>Top of Search</option><option>Product Pages</option><option>Rest of Search</option></select></div>
       </div>
-      <div class="ai-actions"><button class="btn" type="button" onclick="aiSuggestBids()">AI竞价建议</button></div>
-      <div class="ai-box" id="aiBids" style="display:none"></div>
       <div class="actions"><button class="btn" onclick="prev()">上一步</button><button class="btn pri" onclick="next()">下一步</button></div>
     </section>
 
@@ -183,185 +124,16 @@
       <h3>生成结果与导出</h3>
       <div class="stats" id="summary"></div>
       <div id="comboAlert" style="font-size:12px;color:#b45309;margin:8px 0"></div>
-      <div class="ai-actions"><button class="btn" type="button" onclick="aiSuggestExecution()">AI执行清单</button></div>
-      <div class="ai-box" id="aiExecution" style="display:none"></div>
       <div class="actions" style="justify-content:flex-start;gap:8px"><button class="btn" onclick="prev()">上一步</button><button class="btn pri" onclick="generate()">生成组合</button><button class="btn" onclick="downloadJSON()">导出JSON</button><button class="btn" onclick="downloadCSV()">导出CSV</button></div>
-      <div class="box"><table><thead><tr><th>#</th><th>Campaign</th><th>Ad Group</th><th>目的</th><th>SP模式</th><th>子类型</th><th>关键词属性</th><th>竞价</th><th>广告位</th><th>评分</th><th>策略</th><th>预算占比</th><th>建议预算</th></tr></thead><tbody id="tbody"></tbody></table></div>
+      <div class="box"><table><thead><tr><th>#</th><th>Campaign</th><th>Ad Group</th><th>目的</th><th>SP模式</th><th>子类型</th><th>关键词属性</th><th>竞价</th><th>广告位</th></tr></thead><tbody id="tbody"></tbody></table></div>
     </section>
-    </div>
-
-    <div id="tabCanvas" class="tab-pane">
-      <section class="card">
-        <h3>组合幕布计算器（n8n风格简约选择）</h3>
-
-        <div class="wf-wrap">
-        <div class="step wf-node active" data-cstep="1">
-          <div class="canvas-flow">
-            <div class="wf-label">Step 1</div>
-            <label>步骤1：产品类型数</label>
-            <div class="node-row" id="cProductTypesRow">
-              <button class="node-option" data-key="productTypes" data-value="1" onclick="cPick(this)">1种</button>
-              <button class="node-option" data-key="productTypes" data-value="2" onclick="cPick(this)">2种</button>
-              <button class="node-option active" data-key="productTypes" data-value="3" onclick="cPick(this)">3种（标品/半标/非标）</button>
-            </div>
-            <div class="step-hint">灰色=未选中，高亮=已选中</div>
-          </div>
-          <div class="actions"><span></span><button class="btn pri" onclick="cNext()">下一步</button></div>
-        </div>
-
-        <div class="step wf-node" data-cstep="2">
-          <div class="wf-label">Step 2</div>
-          <label>步骤2：生命周期数</label>
-          <div class="node-row" id="cLifecyclesRow">
-            <button class="node-option" data-key="lifecycles" data-value="1" onclick="cPick(this)">1</button>
-            <button class="node-option" data-key="lifecycles" data-value="2" onclick="cPick(this)">2</button>
-            <button class="node-option" data-key="lifecycles" data-value="3" onclick="cPick(this)">3</button>
-            <button class="node-option active" data-key="lifecycles" data-value="4" onclick="cPick(this)">4（导入/成长/成熟/衰退）</button>
-          </div>
-          <div class="actions"><button class="btn" onclick="cPrev()">上一步</button><button class="btn pri" onclick="cNext()">下一步</button></div>
-        </div>
-
-        <div class="step wf-node" data-cstep="3">
-          <div class="wf-label">Step 3</div>
-          <label>步骤3：活动目的数</label>
-          <div class="node-row" id="cObjectivesRow">
-            <button class="node-option" data-key="objectives" data-value="1" onclick="cPick(this)">1</button>
-            <button class="node-option" data-key="objectives" data-value="2" onclick="cPick(this)">2</button>
-            <button class="node-option" data-key="objectives" data-value="3" onclick="cPick(this)">3</button>
-            <button class="node-option" data-key="objectives" data-value="4" onclick="cPick(this)">4</button>
-            <button class="node-option" data-key="objectives" data-value="5" onclick="cPick(this)">5</button>
-            <button class="node-option" data-key="objectives" data-value="6" onclick="cPick(this)">6</button>
-            <button class="node-option active" data-key="objectives" data-value="7" onclick="cPick(this)">7（当前定义）</button>
-          </div>
-          <div class="actions"><button class="btn" onclick="cPrev()">上一步</button><button class="btn pri" onclick="cNext()">下一步</button></div>
-        </div>
-
-        <div class="step wf-node" data-cstep="4">
-          <div class="wf-label">Step 4</div>
-          <label>步骤4：广告位类型数</label>
-          <div class="node-row" id="cPlacementsRow">
-            <button class="node-option" data-key="placements" data-value="1" onclick="cPick(this)">1</button>
-            <button class="node-option" data-key="placements" data-value="2" onclick="cPick(this)">2</button>
-            <button class="node-option active" data-key="placements" data-value="3" onclick="cPick(this)">3（Top/Product/Rest）</button>
-          </div>
-          <div class="actions"><button class="btn" onclick="cPrev()">上一步</button><button class="btn pri" onclick="cNext()">下一步</button></div>
-        </div>
-
-        <div class="step wf-node" data-cstep="5">
-          <div class="wf-label">Step 5</div>
-          <label>步骤5：竞价策略数</label>
-          <div class="node-row" id="cBidsRow">
-            <button class="node-option" data-key="bids" data-value="1" onclick="cPick(this)">1</button>
-            <button class="node-option" data-key="bids" data-value="2" onclick="cPick(this)">2</button>
-            <button class="node-option active" data-key="bids" data-value="3" onclick="cPick(this)">3</button>
-          </div>
-          <div class="actions"><button class="btn" onclick="cPrev()">上一步</button><button class="btn pri" onclick="cNext()">下一步</button></div>
-        </div>
-
-        <div class="step wf-node" data-cstep="6">
-          <div class="wf-label">Step 6</div>
-          <label>步骤6：关键词属性数（仅手动关键词）</label>
-          <div class="node-row" id="cKwAttrsRow">
-            <button class="node-option" data-key="kwAttrs" data-value="1" onclick="cPick(this)">1</button>
-            <button class="node-option" data-key="kwAttrs" data-value="3" onclick="cPick(this)">3</button>
-            <button class="node-option" data-key="kwAttrs" data-value="5" onclick="cPick(this)">5</button>
-            <button class="node-option" data-key="kwAttrs" data-value="8" onclick="cPick(this)">8</button>
-            <button class="node-option active" data-key="kwAttrs" data-value="13" onclick="cPick(this)">13（昨天定义）</button>
-          </div>
-          <div class="actions"><button class="btn" onclick="cPrev()">上一步</button><button class="btn pri" onclick="cNext()">下一步</button></div>
-        </div>
-
-        <div class="step wf-node" data-cstep="7">
-          <div class="wf-label">Step 7</div>
-          <div class="actions" style="justify-content:flex-start;gap:8px">
-            <button class="btn" onclick="cPrev()">上一步</button>
-            <button class="btn pri" onclick="calcCanvasCombo()">计算组合数</button>
-            <button class="btn" onclick="loadCanvasFromWizard()">读取向导当前选择</button>
-          </div>
-          <div class="stats" id="canvasStats"></div>
-          <div class="logic" id="canvasLogic"></div>
-        </div>
-        </div>
-      </section>
-    </div>
   </main>
 </div>
 
 <script>
 const total=9; let cur=1; let generated=[];
-let cCur=1; const cTotal=7;
-const cData={productTypes:3,lifecycles:4,objectives:7,placements:3,bids:3,kwAttrs:13};
 const $=id=>document.getElementById(id); const selected=id=>[...$(id).selectedOptions].map(o=>o.value);
 const STEP_NAMES=['产品基础信息','目标与预算（必填）','产品类型选择','生命周期选择','广告活动目的（可多选）','SP投放模式（可多选）','匹配与定向设置','竞价与广告位设置','生成结果与导出'];
-
-function switchTab(tab){
-  const wizard = tab==='wizard';
-  $('tabWizard').classList.toggle('active',wizard);
-  $('tabCanvas').classList.toggle('active',!wizard);
-  $('tabBtnWizard').classList.toggle('active',wizard);
-  $('tabBtnCanvas').classList.toggle('active',!wizard);
-  $('stepTitle').textContent = wizard ? `步骤 ${cur} / ${total} · ${STEP_NAMES[cur-1]}` : `组合幕布计算器 · 步骤 ${cCur} / ${cTotal}`;
-}
-function cSetStep(n){
-  cCur=n;
-  document.querySelectorAll('[data-cstep]').forEach(s=>s.classList.remove('active'));
-  document.querySelector(`[data-cstep="${n}"]`)?.classList.add('active');
-  if($('tabCanvas').classList.contains('active')) $('stepTitle').textContent=`组合幕布计算器 · 步骤 ${cCur} / ${cTotal}`;
-}
-function cNext(){ if(cCur<cTotal) cSetStep(cCur+1); }
-function cPrev(){ if(cCur>1) cSetStep(cCur-1); }
-function cPick(el){
-  const key=el.dataset.key, value=Number(el.dataset.value);
-  cData[key]=value;
-  document.querySelectorAll(`.node-option[data-key="${key}"]`).forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');
-}
-
-function calcCanvasCombo(){
-  const bids=Number(cData.bids||3);
-  const kwAttrs=Number(cData.kwAttrs||13);
-  const objectives=Number(cData.objectives||7);
-  const lifecycles=Number(cData.lifecycles||4);
-  const placements=Number(cData.placements||3);
-  const productTypes=Number(cData.productTypes||3);
-
-  const auto=1*bids;
-  const kw=3*kwAttrs*bids;
-  const prod=2*bids;
-  const base=auto+kw+prod;
-  const totalCombo=base*objectives*lifecycles*placements*productTypes;
-
-  const stats=$('canvasStats');
-  stats.innerHTML='';
-  [
-    `自动分支：${auto}`,
-    `手动关键词分支：${kw}`,
-    `手动商品分支：${prod}`,
-    `基础组合：${base}`,
-    `总组合：${totalCombo}`
-  ].forEach(t=>{const s=document.createElement('span');s.className='pill';s.textContent=t;stats.appendChild(s)});
-
-  $('canvasLogic').textContent = `基础组合（加法，互斥分支）：\n`+
-    `= 自动(1×${bids}) + 手动关键词(3×${kwAttrs}×${bids}) + 手动商品(2×${bids})\n`+
-    `= ${auto} + ${kw} + ${prod} = ${base}\n\n`+
-    `总组合（乘法，独立维度）：\n`+
-    `= 基础组合 ${base} × 目的 ${objectives} × 周期 ${lifecycles} × 广告位 ${placements} × 产品类型 ${productTypes}\n`+
-    `= ${totalCombo}`;
-}
-
-function loadCanvasFromWizard(){
-  cData.bids=Math.min(3,Math.max(selected('bids').length,1));
-  cData.objectives=Math.max(selected('objectives').length,1);
-  cData.placements=Math.min(3,Math.max(selected('placements').length,1));
-  cData.kwAttrs=Math.max(selected('kwAttr').length,1);
-  cData.lifecycles=4;
-  cData.productTypes=3;
-  // 同步高亮
-  Object.entries(cData).forEach(([key,val])=>{
-    document.querySelectorAll(`.node-option[data-key="${key}"]`).forEach(b=>b.classList.toggle('active',Number(b.dataset.value)===Number(val)));
-  });
-  calcCanvasCombo();
-}
 function renderSteps(){const box=$('steps');box.innerHTML='';for(let i=1;i<=total;i++){const d=document.createElement('div');d.className='st'+(i===cur?' active':'');d.textContent=`步骤 ${i} / ${total} · ${STEP_NAMES[i-1]}`;d.onclick=()=>jumpTo(i);box.appendChild(d)}}
 function setStep(n){cur=n;document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));document.querySelector(`.step[data-step="${n}"]`).classList.add('active');$('stepTitle').textContent=`步骤 ${n} / ${total} · ${STEP_NAMES[n-1]}`;renderSteps();if(n===9) refreshSummary();}
 function jumpTo(target){if(target<=cur)return setStep(target);for(let s=cur;s<target;s++){if(!validateStep(s))return;}setStep(target)}
@@ -399,11 +171,8 @@ function calcAndNext(){
   const be=margin, target=be*0.8; // conservative
   const sales=Number($('monthlySalesTarget').value||0); const budget=Number($('monthlyAdBudget').value||0);
   const acos = sales? budget/sales : 0;
-  const netProfit = sales*margin - budget;
-  const netMargin = sales ? netProfit/sales : 0;
-  if(acos > be){ alert(`当前预算占比 ${(acos*100).toFixed(1)}% 已超过盈亏平衡ACOS ${(be*100).toFixed(1)}%，建议先下调预算或提高售价/利润率`); return; }
   const box=$('derived'); box.innerHTML='';
-  const pills=[`Break-even ACOS: ${(be*100).toFixed(1)}%`,`建议目标ACOS: ${(target*100).toFixed(1)}%`,`预算占比: ${(acos*100).toFixed(1)}%`,`净毛利(扣广告): ${netProfit.toFixed(2)}`,`净毛利率(扣广告): ${(netMargin*100).toFixed(2)}%`];
+  const pills=[`Break-even ACOS: ${(be*100).toFixed(1)}%`,`建议目标ACOS: ${(target*100).toFixed(1)}%`,`预算占比: ${(acos*100).toFixed(1)}%`];
   pills.forEach(t=>{const s=document.createElement('span');s.className='pill';s.textContent=t;box.appendChild(s)});
   next();
 }
@@ -422,30 +191,9 @@ function estimateCount(){
 }
 function refreshSummary(){
   const estimate=estimateCount();
-  const sales=Number($('monthlySalesTarget').value||0), budget=Number($('monthlyAdBudget').value||0), margin=Number($('marginNoAds').value||0)/100;
-  const netProfit = sales*margin - budget;
-  const netMargin = sales ? netProfit/sales : 0;
-  const items=[`产品：${$('productName').value||'-'}`,`站点：${$('market').value}`,`目标月销：${$('monthlySalesTarget').value||'-'}`,`月广告预算：${$('monthlyAdBudget').value||'-'}`,`预计CVR：${$('expectedCVR').value||'-'}%`,`不含广告利润率：${$('marginNoAds').value||'-'}%`,`净毛利(扣广告)：${netProfit.toFixed(2)}`,`净毛利率(扣广告)：${(netMargin*100).toFixed(2)}%`,`预计组合：${estimate}`,`已生成组合：${generated.length}`];
+  const items=[`产品：${$('productName').value||'-'}`,`站点：${$('market').value}`,`目标月销：${$('monthlySalesTarget').value||'-'}`,`月广告预算：${$('monthlyAdBudget').value||'-'}`,`预计CVR：${$('expectedCVR').value||'-'}%`,`不含广告利润率：${$('marginNoAds').value||'-'}%`,`预计组合：${estimate}`,`已生成组合：${generated.length}`];
   const box=$('summary');box.innerHTML='';items.forEach(t=>{const s=document.createElement('span');s.className='pill';s.textContent=t;box.appendChild(s)});
   $('comboAlert').textContent = estimate>3000 ? `⚠ 当前预计 ${estimate} 条，建议先收敛选择（目标 <= 3000）` : '';
-}
-function scoreRow(r){
-  let score=60;
-  if(['出单','盈利','防御'].includes(r.objective)) score+=10;
-  if(r.spMode==='SP手动-关键词') score+=8;
-  if(r.subType==='Exact' || r.kwAttr==='核心精准' || r.kwAttr==='自有品牌词') score+=8;
-  if(r.bid==='动态竞价-只降低') score+=6;
-  if(r.placement==='Top of Search') score+=4;
-  const risk = score>=85?'稳健':(score>=72?'平衡':'进攻');
-  return {score:Math.max(1,Math.min(99,score)),risk};
-}
-function allocateBudget(rows){
-  const monthlyBudget=Number($('monthlyAdBudget').value||0);
-  const totalScore=rows.reduce((s,r)=>s+r.score,0)||1;
-  rows.forEach(r=>{
-    r.budgetPct=+(r.score/totalScore*100).toFixed(2);
-    r.budgetAmt=+(monthlyBudget*r.budgetPct/100).toFixed(2);
-  });
 }
 function generate(){
   if(!validateStep(1)||!validateStep(2)) return;
@@ -470,17 +218,13 @@ function generate(){
         const mk=$('market').value;
         const campaignName=`${mk}_${pn}_${$('lifecycle').value}_${o}_${m}`;
         const adGroupName=`${s}_${a}_${b}_${p}`.replace(/\s+/g,'_');
-        const scored=scoreRow({objective:o,spMode:m,subType:s,kwAttr:a,bid:b,placement:p});
-        rows.push({id:id++,campaignName,adGroupName,objective:o,spMode:m,subType:s,kwAttr:a,bid:b,placement:p,score:scored.score,risk:scored.risk,
+        rows.push({id:id++,campaignName,adGroupName,objective:o,spMode:m,subType:s,kwAttr:a,bid:b,placement:p,
         productName:$('productName').value,market:mk,category:$('category').value,priceBand:$('priceBand').value,
         monthlySalesTarget:$('monthlySalesTarget').value,monthlyAdBudget:$('monthlyAdBudget').value,expectedCVR:$('expectedCVR').value,marginNoAds:$('marginNoAds').value,
         productType:$('productType').value,lifecycle:$('lifecycle').value});}
     }
   }
-  rows.sort((a,b)=>b.score-a.score);
-  rows.forEach((r,i)=>r.id=i+1);
-  allocateBudget(rows);
-  generated=rows; const tb=$('tbody');tb.innerHTML='';rows.slice(0,3000).forEach(r=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${r.id}</td><td>${r.campaignName}</td><td>${r.adGroupName}</td><td>${r.objective}</td><td>${r.spMode}</td><td>${r.subType}</td><td>${r.kwAttr}</td><td>${r.bid}</td><td>${r.placement}</td><td>${r.score}</td><td>${r.risk}</td><td>${r.budgetPct}%</td><td>${r.budgetAmt}</td>`;tb.appendChild(tr)});
+  generated=rows; const tb=$('tbody');tb.innerHTML='';rows.forEach(r=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${r.id}</td><td>${r.campaignName}</td><td>${r.adGroupName}</td><td>${r.objective}</td><td>${r.spMode}</td><td>${r.subType}</td><td>${r.kwAttr}</td><td>${r.bid}</td><td>${r.placement}</td>`;tb.appendChild(tr)});
   refreshSummary();
 }
 function setMultiSelected(id,vals){[...$(id).options].forEach(o=>o.selected=vals.includes(o.value));}
@@ -516,109 +260,10 @@ function applyPreset(){
   toggleFields();
   refreshSummary();
 }
-function setAiStatus(msg,type='info'){
-  const el=$('aiCfgTip'); if(!el) return;
-  const styles={info:['#ecfeff','#67e8f9','#155e75'],ok:['#ecfdf5','#86efac','#166534'],warn:['#fff7ed','#fdba74','#9a3412'],err:['#fef2f2','#fca5a5','#991b1b']};
-  const st=styles[type]||styles.info;
-  el.style.background=st[0]; el.style.border='1px solid '+st[1]; el.style.color=st[2];
-  el.textContent=msg;
-}
-async function fetchWithTimeout(url,opt={},timeoutMs=12000){
-  const c=new AbortController();
-  const t=setTimeout(()=>c.abort('timeout'),timeoutMs);
-  try{return await fetch(url,{...opt,signal:c.signal});}
-  finally{clearTimeout(t);}
-}
-async function callRealAI(kind){
-  // 安全策略：前端不保存任何 API Key，统一走后端代理；代理不可用时回退本地建议。
-  const payload={kind,productName:$('productName').value,market:$('market').value,category:$('category').value,priceBand:$('priceBand').value,monthlySalesTarget:$('monthlySalesTarget').value,monthlyAdBudget:$('monthlyAdBudget').value,expectedCVR:$('expectedCVR').value,marginNoAds:$('marginNoAds').value,productType:$('productType').value,lifecycle:$('lifecycle').value,objectives:selected('objectives'),spModes:selected('spModes'),manualMatch:selected('manualMatch'),kwAttr:selected('kwAttr'),bids:selected('bids'),placements:selected('placements')};
-
-  try{
-    setAiStatus('AI分析中（代理）...','info');
-    const r=await fetchWithTimeout('/api/ai-suggest',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)},12000);
-    if(r.ok){
-      const j=await r.json();
-      const txt=(j?.text||'').trim();
-      if(txt){ setAiStatus('AI分析成功','ok'); return txt; }
-    }
-    setAiStatus(`代理不可用（${r.status}），已回退本地建议`,'warn');
-    return '';
-  }catch(e){
-    setAiStatus('代理不可用，已回退本地建议','warn');
-    return '';
-  }
-}
-function showAI(id,text){const el=$(id);el.style.display='block';el.textContent=text;}
-async function aiSuggestBudget(){
-  const real=await callRealAI("aiSuggestBudget"); if(real) return showAI("aiBudget",real);
-  const sales=Number($('monthlySalesTarget').value||0), budget=Number($('monthlyAdBudget').value||0), cvr=Number($('expectedCVR').value||0), margin=Number($('marginNoAds').value||0);
-  const pt=$('productType').value, lc=$('lifecycle').value;
-  if(!sales||!budget||!cvr||!margin) return showAI('aiBudget','请先填写步骤2核心字段后再生成建议。');
-  let ratioBase={导入期:0.18,成长期:0.14,成熟期:0.10,衰退期:0.06}[lc]||0.12;
-  if(pt==='非标品') ratioBase+=0.03;
-  if(pt==='标品') ratioBase-=0.01;
-  const low=sales*Math.max(ratioBase-0.03,0.03), high=sales*(ratioBase+0.03);
-  const be=margin; const acos=budget/sales;
-  showAI('aiBudget',`建议月预算区间：${low.toFixed(0)} - ${high.toFixed(0)}
-当前预算占比：${(acos*100).toFixed(1)}%，盈亏平衡ACOS：${be.toFixed(1)}%
-建议目标ACOS：${Math.max(3,margin*0.8).toFixed(1)}%
-${acos*100>margin?'⚠ 当前预算压力偏高，建议下调预算或提高客单/利润率':'✅ 当前预算在可控区间内'}`);
-}
-async function aiSuggestObjectives(){
-  const real=await callRealAI("aiSuggestObjectives"); if(real) return showAI("aiObjectives",real);
-  const pt=$('productType').value, lc=$('lifecycle').value;
-  const map={导入期:['曝光','扩流','出单'],成长期:['出单','推排名','扩流'],成熟期:['盈利','防御','出单'],衰退期:['盈利','防御']};
-  const obj=map[lc]||['出单'];
-  if(pt==='非标品' && !obj.includes('打标签')) obj.push('打标签');
-  if(pt==='标品' && !obj.includes('推排名')) obj.push('推排名');
-  showAI('aiObjectives',`推荐优先目的：${obj.join(' / ')}
-依据：${lc} + ${pt}。
-执行建议：主目标2-3个，避免全选导致组合过多。`);
-}
-async function aiSuggestTargeting(){
-  const real=await callRealAI("aiSuggestTargeting"); if(real) return showAI("aiTargeting",real);
-  const pt=$('productType').value, lc=$('lifecycle').value;
-  let rec='';
-  if(pt==='标品') rec='关键词匹配建议：Exact 50% / Phrase 35% / Broad 15%。优先：核心精准、自有品牌词。';
-  else if(pt==='非标品') rec='关键词匹配建议：Phrase 45% / Broad 35% / Exact 20%。优先：品类大词、长尾词、场景词。';
-  else rec='关键词匹配建议：Exact 40% / Phrase 40% / Broad 20%。';
-  if(lc==='导入期') rec+=' 导入期建议保留更高Broad用于拓词。';
-  if(lc==='成熟期') rec+=' 成熟期建议收缩到Exact/Phrase并加强否词。';
-  showAI('aiTargeting',rec+'\n否词建议：每周清理高花费无转化词。');
-}
-async function aiSuggestBids(){
-  const real=await callRealAI("aiSuggestBids"); if(real) return showAI("aiBids",real);
-  const lc=$('lifecycle').value, pt=$('productType').value;
-  let bid='动态竞价-提高和降低'; let top='20%-40%';
-  if(lc==='成熟期'){bid='动态竞价-只降低'; top='10%-20%';}
-  if(lc==='衰退期'){bid='固定竞价'; top='0%-10%';}
-  if(pt==='非标品'&&lc!=='成熟期') top='25%-50%';
-  showAI('aiBids',`推荐竞价策略：${bid}
-Top of Search 溢价建议：${top}
-Product Pages建议：5%-15%（用于商品定向收口）`);
-}
-async function aiSuggestExecution(){
-  const real=await callRealAI("aiSuggestExecution"); if(real) return showAI("aiExecution",real);
-  if(!generated.length) return showAI('aiExecution','请先点击“生成组合”后再生成执行清单。');
-  const top=generated.slice(0,8);
-  const sum=top.map((r,i)=>`${i+1}. [${r.score}] ${r.objective} | ${r.spMode} | ${r.subType} | 预算 ${r.budgetAmt}`).join('\n');
-  showAI('aiExecution',`今日优先执行 Top 8：
-${sum}
-
-执行节奏：先上前3条观察24小时，再放开其余。`);
-}
 function downloadJSON(){const b=new Blob([JSON.stringify(generated,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='amazon_ads_wizard_pro.json';a.click()}
-function downloadCSV(){const H=['id','campaignName','adGroupName','productName','market','category','priceBand','monthlySalesTarget','monthlyAdBudget','expectedCVR','marginNoAds','productType','lifecycle','objective','spMode','subType','kwAttr','bid','placement','score','risk','budgetPct','budgetAmt'];const csv=[H.join(',')].concat(generated.map(r=>H.map(h=>`"${String(r[h]??'').replaceAll('"','""')}"`).join(','))).join('\n');const b=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='amazon_ads_wizard_pro.csv';a.click()}
+function downloadCSV(){const H=['id','campaignName','adGroupName','productName','market','category','priceBand','monthlySalesTarget','monthlyAdBudget','expectedCVR','marginNoAds','productType','lifecycle','objective','spMode','subType','kwAttr','bid','placement'];const csv=[H.join(',')].concat(generated.map(r=>H.map(h=>`"${String(r[h]??'').replaceAll('"','""')}"`).join(','))).join('\n');const b=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='amazon_ads_wizard_pro.csv';a.click()}
 ['objectives','spModes','autoSub','manualMatch','manualProduct','kwAttr','bids','placements'].forEach(id=>$(id).addEventListener('change',refreshSummary));
 ['productName','monthlySalesTarget','monthlyAdBudget','expectedCVR','marginNoAds'].forEach(id=>$(id).addEventListener('input',refreshSummary));
-// 默认测试预设（便于快速验证）
-setMultiSelected('objectives',['出单','推排名']);
-setMultiSelected('spModes',['SP手动-关键词','SP自动']);
-setMultiSelected('manualMatch',['Phrase','Exact']);
-setMultiSelected('kwAttr',['核心精准','自有品牌词']);
-setMultiSelected('autoSub',['Close Match','Loose Match']);
-setMultiSelected('bids',['动态竞价-提高和降低']);
-setMultiSelected('placements',['Top of Search','Product Pages']);
-setStep(1);toggleFields();refreshSummary();cSetStep(1);calcCanvasCombo();
+setStep(1);toggleFields();refreshSummary();
 </script>
 </body></html>
